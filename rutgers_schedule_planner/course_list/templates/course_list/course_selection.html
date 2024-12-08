@@ -1,0 +1,6 @@
+{% load static %}
+<ul>
+    {% for course in courses %}
+    <li>{{ course.title }} -- {{ course.school_code }}:{{course.subject_code}}:{{course.course_code}}</li>
+    {% endfor %}
+</ul>
