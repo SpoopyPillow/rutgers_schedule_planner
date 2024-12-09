@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.db import transaction
+from django.utils.dateparse import parse_time
 
 from .models import School, Subject, Course, Section, SectionClass
 
@@ -25,9 +26,12 @@ def update_courses(request):
         School.objects.all().delete()
         Subject.objects.all().delete()
         Course.objects.all().delete()
+        Section.objects.all().delete()
+        SectionClass.objects.all().delete()
 
         courses = []
         sections = []
+        section_classes = []
         for course_data in data:
             school_fields = {
                 "code": course_data["school"]["code"],
@@ -61,8 +65,22 @@ def update_courses(request):
                 section = Section(**section_fields)
                 sections.append(section)
 
+                for section_class_data in section_data["meetingTimes"]:
+                    section_class_fields = {
+                        "section": section,
+                        "day": section_class_data["meetingDay"],
+                        "start_time": parse_time(section_class_data["startTimeMilitary"]),
+                        "end_time": parse_time(section_class_data["endTimeMilitary"]),
+                        "campus": section_class_data["campusName"],
+                        "building": section_class_data["buildingCode"],
+                        "room": section_class_data["roomNumber"],
+                    }
+                    section_class = SectionClass(**section_class_fields)
+                    section_classes.append(section_class)
+
         Course.objects.bulk_create(courses)
         Section.objects.bulk_create(sections)
+        SectionClass.objects.bulk_create(section_classes)
 
     return HttpResponseRedirect(reverse("course_list:course_selection"))
 

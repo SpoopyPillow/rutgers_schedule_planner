@@ -7,7 +7,7 @@ class School(models.Model):
     title = models.CharField(max_length=255)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["code"], name="unique_school_code")]
+        constraints = [models.UniqueConstraint(fields=["code"], name="unique_school")]
 
     def __str__(self):
         return self.title
@@ -18,7 +18,7 @@ class Subject(models.Model):
     title = models.CharField(max_length=255)
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["code"], name="unique_subject_code")]
+        constraints = [models.UniqueConstraint(fields=["code"], name="unique_subject")]
 
     def __str__(self):
         return self.title
@@ -42,14 +42,14 @@ class Section(models.Model):
     open_status = models.BooleanField()
 
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["index"], name="unique_section_index")]
+        constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
 
 
 class SectionClass(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
-    time = models.TimeField()
+    day = models.CharField(max_length=1)
+    start_time = models.TimeField(null=True)
+    end_time = models.TimeField(null=True)
     campus = models.CharField(max_length=255)
     building = models.CharField(max_length=255)
-
-    class Meta:
-        constraints = [models.UniqueConstraint(fields=["time"], name="unique_section_class_time")]
+    room = models.CharField(max_length=255)
