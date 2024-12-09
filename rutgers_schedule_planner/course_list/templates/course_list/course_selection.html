@@ -1,6 +1,11 @@
 {% load static %}
 <ul>
     {% for course in courses %}
-    <li>{{ course.title }} -- {{ course.school_code }}:{{course.subject_code}}:{{course.course_code}}</li>
+    {{ course.title }} -- {{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}
+    {% for section in course.section_set.all %}
+    <li>
+        {{ section.number }} -- {{ section.open_status }}
+    </li>
+    {% endfor %}
     {% endfor %}
 </ul>
