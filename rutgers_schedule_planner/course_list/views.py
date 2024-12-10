@@ -35,7 +35,7 @@ def update_courses(request):
         for course_data in data:
             school_fields = {
                 "code": course_data["school"]["code"],
-                "title": course_data["school"]["description"],
+                "title": course_data["school"]["description"]
             }
             school, _ = School.objects.get_or_create(**school_fields)
 
@@ -50,6 +50,10 @@ def update_courses(request):
                 "subject": subject,
                 "code": course_data["courseNumber"],
                 "title": course_data["title"],
+                "credits": course_data["credits"],
+                "core": course_data["coreCodes"],
+                "prereqs": course_data["preReqNotes"],
+                "synopsis_url": course_data["synopsisUrl"]
             }
             course = Course(**course_fields)
             courses.append(course)
@@ -61,6 +65,13 @@ def update_courses(request):
                     "course": course,
                     "instructor": section_data["instructorsText"],
                     "open_status": section_data["openStatus"],
+                    "subtitle": section_data["subtitle"],
+                    "exam_code": section_data["examCode"],
+                    "exam_code_text": section_data["examCodeText"],
+                    "notes": section_data["sectionNotes"],
+                    "restrictions": section_data["sectionEligibility"],
+                    "comments": section_data["comments"],
+                    "cross_listed": section_data["crossListedSections"]
                 }
                 section = Section(**section_fields)
                 sections.append(section)
@@ -71,9 +82,10 @@ def update_courses(request):
                         "day": section_class_data["meetingDay"],
                         "start_time": parse_time(section_class_data["startTimeMilitary"]),
                         "end_time": parse_time(section_class_data["endTimeMilitary"]),
-                        "campus": section_class_data["campusName"],
+                        "campus_num": section_class_data["campusLocation"],
+                        "campus_title": section_class_data["campusName"],
                         "building": section_class_data["buildingCode"],
-                        "room": section_class_data["roomNumber"],
+                        "room": section_class_data["roomNumber"]
                     }
                     section_class = SectionClass(**section_class_fields)
                     section_classes.append(section_class)

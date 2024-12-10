@@ -1,11 +1,28 @@
 {% load static %}
+
+{% for course in courses %}
+Title {{course.title}}; Code {{course.school.code}}:{{course.subject.code}}:{{course.code}}; Credits {{course.credits}};
+Core {{course.core}}
 <ul>
-    {% for course in courses %}
-    {{ course.title }} -- {{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}
     {% for section in course.section_set.all %}
     <li>
-        {{ section.number }} -- {{ section.open_status }}
+        Section {{section.number}}; Index {{section.index}}; Status {{section.open_status}}; Instructor
+        {{section.instructor}}; Exam {{section.exam_code_text}}
+        <br>Subtitle {{section.subtitle}}
+        <br>Notes {{section.notes}}
+        <br>Restrictions {{section.restrictions}}
+        <br>Comments {{section.comments}}
+        <br> Cross Listed {{section.cross_listed}}
+        <ul>
+            {% for section_class in section.sectionclass_set.all %}
+            <li>
+                Campus Num {{section_class.campus_num}}; Day {{section_class.day}}; Start Time
+                {{section_class.start_time}}; End Time {{section_class.end_time}}; Campus
+                {{section_class.campus_title}}; Building {{section_class.building}}; Room {{section_class.room}}
+            </li>
+            {% endfor %}
+        </ul>
     </li>
     {% endfor %}
-    {% endfor %}
 </ul>
+{% endfor %}
