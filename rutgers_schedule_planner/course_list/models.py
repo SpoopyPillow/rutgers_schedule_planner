@@ -9,6 +9,7 @@ class School(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["code"], name="unique_school")]
+        indexes = [models.Index(fields=["code"])]
 
     def __str__(self):
         return self.title
@@ -20,6 +21,7 @@ class Subject(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["code"], name="unique_subject")]
+        indexes = [models.Index(fields=["code"])]
 
     def __str__(self):
         return self.title
@@ -30,10 +32,14 @@ class Course(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     code = models.IntegerField()
     title = models.CharField(max_length=255)
+    level = models.CharField(max_length=1)
     credits = models.IntegerField(null=True)
     core = ArrayField(models.JSONField(), default=list)
     prereqs = models.TextField()
     synopsis_url = models.CharField(max_length=255)
+    
+    class Meta:
+        indexes = [models.Index(fields=["school", "subject", "code"])]
 
     def __str___(self):
         return self.title
@@ -55,6 +61,7 @@ class Section(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
+        indexes = [models.Index(fields=["index"])]
 
 
 class SectionClass(models.Model):
@@ -66,3 +73,6 @@ class SectionClass(models.Model):
     campus_title = models.CharField(max_length=255)
     building = models.CharField(max_length=255)
     room = models.CharField(max_length=255)
+    
+    class Meta:
+        indexes = [models.Index(fields=["section", "day", "start_time"])]

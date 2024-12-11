@@ -1,0 +1,10 @@
+{% load static %}
+<form action="{% url 'course_list:update_courses' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Update courses">
+</form>
+
+<form action="{% url 'course_list:update_open_status' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Update open status">
+</form>

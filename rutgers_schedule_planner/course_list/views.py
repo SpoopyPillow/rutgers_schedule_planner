@@ -11,14 +11,23 @@ from .models import School, Subject, Course, Section, SectionClass
 
 
 def index(request):
-    return render(request, "course_list/index.html", {})
+    return HttpResponse("hi")
+
+
+def course_selection(request):
+    courses = Course.objects.all().order_by("school", "subject", "code")
+    return render(request, "course_list/course_selection.html", {"courses": courses})
+
+
+def update_db(request):
+    return render(request, "course_list/update_db.html", {})
 
 
 def update_courses(request):
     if not request.method == "POST":
         raise Http404
 
-    params = {"year": 2025, "term": 1, "campus": "NB"}
+    params = {"year": 2025, "term": 1, "campus": "NB", "level": "U, G"}
     response = requests.post("https://classes.rutgers.edu/soc/api/courses.json", data=params)
     data = json.loads(response.text)
 
@@ -35,7 +44,7 @@ def update_courses(request):
         for course_data in data:
             school_fields = {
                 "code": course_data["school"]["code"],
-                "title": course_data["school"]["description"]
+                "title": course_data["school"]["description"],
             }
             school, _ = School.objects.get_or_create(**school_fields)
 
@@ -50,10 +59,11 @@ def update_courses(request):
                 "subject": subject,
                 "code": course_data["courseNumber"],
                 "title": course_data["title"],
+                "level": course_data["level"],
                 "credits": course_data["credits"],
                 "core": course_data["coreCodes"],
                 "prereqs": course_data["preReqNotes"],
-                "synopsis_url": course_data["synopsisUrl"]
+                "synopsis_url": course_data["synopsisUrl"],
             }
             course = Course(**course_fields)
             courses.append(course)
@@ -71,7 +81,7 @@ def update_courses(request):
                     "notes": section_data["sectionNotes"],
                     "restrictions": section_data["sectionEligibility"],
                     "comments": section_data["comments"],
-                    "cross_listed": section_data["crossListedSections"]
+                    "cross_listed": section_data["crossListedSections"],
                 }
                 section = Section(**section_fields)
                 sections.append(section)
@@ -85,7 +95,7 @@ def update_courses(request):
                         "campus_num": section_class_data["campusLocation"],
                         "campus_title": section_class_data["campusName"],
                         "building": section_class_data["buildingCode"],
-                        "room": section_class_data["roomNumber"]
+                        "room": section_class_data["roomNumber"],
                     }
                     section_class = SectionClass(**section_class_fields)
                     section_classes.append(section_class)
@@ -97,6 +107,8 @@ def update_courses(request):
     return HttpResponseRedirect(reverse("course_list:course_selection"))
 
 
-def course_selection(request):
-    courses = Course.objects.all().order_by("school", "subject", "code")
-    return render(request, "course_list/course_selection.html", {"courses": courses})
+def update_open_status(request):
+    if not request.method == "POST":
+        raise Http404
+
+    return HttpResponseRedirect(reverse("course_list:course_selection"))

@@ -2,7 +2,7 @@
 
 {% for course in courses %}
 Title {{course.title}}; Code {{course.school.code}}:{{course.subject.code}}:{{course.code}}; Credits {{course.credits}};
-Core {{course.core}}
+Core {{course.core}}; Level {{course.level}}
 <ul>
     {% for section in course.section_set.all %}
     <li>
