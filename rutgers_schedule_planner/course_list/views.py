@@ -8,35 +8,32 @@ from django.db import transaction
 from django.utils.dateparse import parse_time
 
 from .models import School, Subject, Course, Comment, Section, SectionClass
+from .forms import CourseFilterForm
 
 
 def student_related(request):
-    return render(request, "course_list/student_related.html")
+    return render(request, "course_list/student_related.html", {"form": CourseFilterForm})
 
 
 def course_selection(request):
-    if request.method == "POST":
+    if not request.method == "GET":
         raise Http404
 
-    form = request.GET
-    form_term = form.get("term")
-    form_locations = form.getlist("location")
-    form_levels = form.getlist("level")
-    form_school = form.get("school")
+    form = CourseFilterForm(request.GET)
+    if not form.is_valid():
+        return HttpResponse("no")
+    filters = form.cleaned_data
 
-    schools = School.objects.all()
-    courses = Course.objects.filter(level__in=form_levels, school__code=form_school).order_by(
-        "school", "subject", "code"
-    )[0:5]
+    courses = Course.objects.filter(
+        level__in=filters["levels"], school__code=filters["school"], subject__code=filters["subject"]
+    ).order_by("school", "subject", "code")[0:5]
+
     return render(
         request,
         "course_list/course_selection.html",
         {
-            "schools": schools,
+            "form": form,
             "courses": courses,
-            "term_filter": form_term,
-            "locations_filter": form_locations,
-            "levels_filter": form_levels,
         },
     )
 

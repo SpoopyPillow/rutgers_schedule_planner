@@ -8,13 +8,9 @@
 }
 
 #filter_sidebar {
-    width:25%
+    flex:1;
 }
 
 #course_list {
-    width:75%
-}
-
-#school_filter {
-    width:100%
+    flex:3;
 }
