@@ -10,8 +10,14 @@
         <div id="filter_sidebar">
             <form action="{% url 'course_list:course_selection' %}" method="get">
                 <input type="submit" value="Filter">
-                <div id="active_filters">
-                    {{form.as_p}}
+                <div class="hidden">
+                    {{student_form.as_p}}
+                </div>
+                <div id="course_filter">
+                    {{course_form.as_p}}
+                </div>
+                <div id="section_filter">
+
                 </div>
             </form>
         </div>

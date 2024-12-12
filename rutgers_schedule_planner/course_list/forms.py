@@ -1,10 +1,9 @@
 from django import forms
-from django.contrib.postgres.forms import SimpleArrayField
 
 from .models import School, Subject
 
 
-class CourseFilterForm(forms.Form):
+class StudentFilterForm(forms.Form):
     term_choices = [
         ("1", "Spring"),
     ]
@@ -23,6 +22,8 @@ class CourseFilterForm(forms.Form):
     ]
     levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
 
+
+class CourseFilterForm(forms.Form):
     school_choices = [(None, "None")] + [
         (school.code, str(school.code) + " " + school.title) for school in School.objects.all().order_by("code")
     ]

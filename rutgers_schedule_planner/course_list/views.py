@@ -6,33 +6,39 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
+from django.forms.formsets import formset_factory
 
 from .models import School, Subject, Course, Comment, Section, SectionClass
-from .forms import CourseFilterForm
+from .forms import StudentFilterForm, CourseFilterForm
 
 
 def student_related(request):
-    return render(request, "course_list/student_related.html", {"form": CourseFilterForm})
+    return render(request, "course_list/student_related.html", {"form": StudentFilterForm})
 
 
 def course_selection(request):
     if not request.method == "GET":
         raise Http404
+    student_form = StudentFilterForm(request.GET)
+    course_form = CourseFilterForm(request.GET)
 
-    form = CourseFilterForm(request.GET)
-    if not form.is_valid():
-        return HttpResponse("no")
-    filters = form.cleaned_data
+    if not student_form.is_valid() or not course_form.is_valid():
+        return HttpResponse("invalid")
+    student_filters = student_form.cleaned_data
+    course_filters = course_form.cleaned_data
 
     courses = Course.objects.filter(
-        level__in=filters["levels"], school__code=filters["school"], subject__code=filters["subject"]
+        level__in=student_filters["levels"],
+        school__code=course_filters["school"],
+        subject__code=course_filters["subject"],
     ).order_by("school", "subject", "code")[0:5]
 
     return render(
         request,
         "course_list/course_selection.html",
         {
-            "form": form,
+            "student_form": student_form,
+            "course_form": course_form,
             "courses": courses,
         },
     )
