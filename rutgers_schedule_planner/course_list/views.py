@@ -43,6 +43,9 @@ def update_courses(request):
         Section.objects.all().delete()
         SectionClass.objects.all().delete()
 
+        courses = []
+        sections = []
+        section_classes = []
         for course_data in data:
             school_fields = {
                 "code": course_data["school"]["code"],
@@ -68,7 +71,7 @@ def update_courses(request):
                 "synopsis_url": course_data["synopsisUrl"],
             }
             course = Course(**course_fields)
-            course.save()
+            courses.append(course)
 
             for section_data in course_data["sections"]:
                 section_fields = {
@@ -82,20 +85,12 @@ def update_courses(request):
                     "exam_code_text": section_data["examCodeText"],
                     "notes": section_data["sectionNotes"],
                     "restrictions": section_data["sectionEligibility"],
-                    "cross_listed": section_data["crossListedSections"],
+                    "cross_listed": [
+                        i["registrationIndex"] for i in section_data["crossListedSections"]
+                    ],
                 }
                 section = Section(**section_fields)
-                section.save()
-
-                comments = []
-                for comment_data in section_data["comments"]:
-                    comment_fields = {
-                        "code": comment_data["code"],
-                        "description": comment_data["description"],
-                    }
-                    comment, _ = Comment.objects.get_or_create(**comment_fields)
-                    comments.append(comment)
-                section.comments.set(comments)
+                sections.append(section)
 
                 for section_class_data in section_data["meetingTimes"]:
                     section_class_fields = {
@@ -109,7 +104,23 @@ def update_courses(request):
                         "room": section_class_data["roomNumber"],
                     }
                     section_class = SectionClass(**section_class_fields)
-                    section_class.save()
+                    section_classes.append(section_class)
+
+        Course.objects.bulk_create(courses)
+        Section.objects.bulk_create(sections)
+        SectionClass.objects.bulk_create(section_classes)
+
+        for course_data in data:
+            for section_data in course_data["sections"]:
+                section = Section.objects.get(index=section_data["index"])
+
+                for comment_data in section_data["comments"]:
+                    comment_fields = {
+                        "code": comment_data["code"],
+                        "description": comment_data["description"],
+                    }
+                    comment, _ = Comment.objects.get_or_create(**comment_fields)
+                    section.comments.add(comment)
 
     return HttpResponseRedirect(reverse("course_list:student_related"))
 

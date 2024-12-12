@@ -68,7 +68,7 @@ class Section(models.Model):
     notes = models.CharField(max_length=255)
     restrictions = models.CharField(max_length=255)
     comments = models.ManyToManyField(Comment, related_name="section")
-    cross_listed = ArrayField(models.JSONField(), default=list)
+    cross_listed = ArrayField(models.IntegerField(), default=list)
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
