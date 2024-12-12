@@ -19,9 +19,16 @@ def course_selection(request):
         raise Http404
 
     form = request.GET
-    form_level = form.getlist("level")
-    courses = Course.objects.filter(level__in=form_level).order_by("school", "subject", "code")
-    return render(request, "course_list/course_selection.html", {"courses": courses})
+    form_term = form["term"]
+    form_locations = form.getlist("location")
+    form_levels = form.getlist("level")
+    
+    courses = Course.objects.filter(level__in=form_levels).order_by("school", "subject", "code")[0:5]
+    return render(
+        request,
+        "course_list/course_selection.html",
+        {"courses": courses, "term": form_term, "locations": form_locations, "levels": form_levels},
+    )
 
 
 def update_db(request):
@@ -85,9 +92,7 @@ def update_courses(request):
                     "exam_code_text": section_data["examCodeText"],
                     "notes": section_data["sectionNotes"],
                     "restrictions": section_data["sectionEligibility"],
-                    "cross_listed": [
-                        i["registrationIndex"] for i in section_data["crossListedSections"]
-                    ],
+                    "cross_listed": [i["registrationIndex"] for i in section_data["crossListedSections"]],
                 }
                 section = Section(**section_fields)
                 sections.append(section)
