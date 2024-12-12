@@ -27,11 +27,14 @@ def course_selection(request):
     student_filters = student_form.cleaned_data
     course_filters = course_form.cleaned_data
 
-    courses = Course.objects.filter(
-        level__in=student_filters["levels"],
-        school__code=course_filters["school"],
-        subject__code=course_filters["subject"],
-    ).order_by("school", "subject", "code")[0:5]
+    filters = {"level__in": student_filters["levels"]}
+
+    if course_filters["school"] is not None:
+        filters["school__code"] = course_filters["school"]
+    if course_filters["subject"] is not None:
+        filters["subject__code"] = course_filters["subject"]
+
+    courses = Course.objects.filter(**filters).order_by("school", "subject", "code")[0:5]
 
     return render(
         request,
