@@ -19,15 +19,25 @@ def course_selection(request):
         raise Http404
 
     form = request.GET
-    form_term = form["term"]
+    form_term = form.get("term")
     form_locations = form.getlist("location")
     form_levels = form.getlist("level")
-    
-    courses = Course.objects.filter(level__in=form_levels).order_by("school", "subject", "code")[0:5]
+    form_school = form.get("school")
+
+    schools = School.objects.all()
+    courses = Course.objects.filter(level__in=form_levels, school__code=form_school).order_by(
+        "school", "subject", "code"
+    )[0:5]
     return render(
         request,
         "course_list/course_selection.html",
-        {"courses": courses, "term": form_term, "locations": form_locations, "levels": form_levels},
+        {
+            "schools": schools,
+            "courses": courses,
+            "term_filter": form_term,
+            "locations_filter": form_locations,
+            "levels_filter": form_levels,
+        },
     )
 
 

@@ -9,14 +9,26 @@
     <div id="content">
         <div id="filter_sidebar">
             <form action="{% url 'course_list:course_selection' %}" method="get">
-                <input type="hidden" name="term" value={{term}}>
-                {% for location in locations %}
-                <input type="hidden" name="location" value={{location}}>
-                {% endfor %}
-                {% for level in levels %}
-                <input type="hidden" name="level" value={{level}}>
-                {% endfor %}
-                <input type="submit" value="Filter">
+                <div class="hidden_filters">
+                    <input type="hidden" name="term" value={{term_filter}}>
+                    {% for location in locations_filter %}
+                    <input type="hidden" name="location" value={{location}}>
+                    {% endfor %}
+                    {% for level in levels_filter %}
+                    <input type="hidden" name="level" value={{level}}>
+                    {% endfor %}
+                    <input type="submit" value="Filter">
+                </div>
+                <div id="active_filters">
+                    <h5>
+                        School
+                    </h5>
+                    <select id="school_filter" name="school">
+                        {% for school in schools %}
+                        <option value={{school.code}}>{{school.code}} {{school.title}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </form>
         </div>
         <div id="course_list">
