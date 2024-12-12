@@ -7,20 +7,25 @@ from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
 
-from .models import School, Subject, Course, Section, SectionClass
+from .models import School, Subject, Course, Comment, Section, SectionClass
 
 
-def index(request):
-    return HttpResponse("hi")
+def student_related(request):
+    return render(request, "course_list/student_related.html")
 
 
 def course_selection(request):
-    courses = Course.objects.all().order_by("school", "subject", "code")
+    if request.method == "POST":
+        raise Http404
+
+    form = request.GET
+    form_level = form.getlist("level")
+    courses = Course.objects.filter(level__in=form_level).order_by("school", "subject", "code")
     return render(request, "course_list/course_selection.html", {"courses": courses})
 
 
 def update_db(request):
-    return render(request, "course_list/update_db.html", {})
+    return render(request, "course_list/update_db.html")
 
 
 def update_courses(request):
@@ -38,9 +43,6 @@ def update_courses(request):
         Section.objects.all().delete()
         SectionClass.objects.all().delete()
 
-        courses = []
-        sections = []
-        section_classes = []
         for course_data in data:
             school_fields = {
                 "code": course_data["school"]["code"],
@@ -66,7 +68,7 @@ def update_courses(request):
                 "synopsis_url": course_data["synopsisUrl"],
             }
             course = Course(**course_fields)
-            courses.append(course)
+            course.save()
 
             for section_data in course_data["sections"]:
                 section_fields = {
@@ -80,11 +82,20 @@ def update_courses(request):
                     "exam_code_text": section_data["examCodeText"],
                     "notes": section_data["sectionNotes"],
                     "restrictions": section_data["sectionEligibility"],
-                    "comments": section_data["comments"],
                     "cross_listed": section_data["crossListedSections"],
                 }
                 section = Section(**section_fields)
-                sections.append(section)
+                section.save()
+
+                comments = []
+                for comment_data in section_data["comments"]:
+                    comment_fields = {
+                        "code": comment_data["code"],
+                        "description": comment_data["description"],
+                    }
+                    comment, _ = Comment.objects.get_or_create(**comment_fields)
+                    comments.append(comment)
+                section.comments.set(comments)
 
                 for section_class_data in section_data["meetingTimes"]:
                     section_class_fields = {
@@ -98,17 +109,13 @@ def update_courses(request):
                         "room": section_class_data["roomNumber"],
                     }
                     section_class = SectionClass(**section_class_fields)
-                    section_classes.append(section_class)
+                    section_class.save()
 
-        Course.objects.bulk_create(courses)
-        Section.objects.bulk_create(sections)
-        SectionClass.objects.bulk_create(section_classes)
-
-    return HttpResponseRedirect(reverse("course_list:course_selection"))
+    return HttpResponseRedirect(reverse("course_list:student_related"))
 
 
 def update_open_status(request):
     if not request.method == "POST":
         raise Http404
 
-    return HttpResponseRedirect(reverse("course_list:course_selection"))
+    return HttpResponseRedirect(reverse("course_list:student_related"))

@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
 
 {% for course in courses %}
 Title {{course.title}}; Code {{course.school.code}}:{{course.subject.code}}:{{course.code}}; Credits {{course.credits}};
@@ -11,7 +12,7 @@ Core {{course.core}}; Level {{course.level}}
         <br>Subtitle {{section.subtitle}}
         <br>Notes {{section.notes}}
         <br>Restrictions {{section.restrictions}}
-        <br>Comments {{section.comments}}
+        <br>Comments {{section.comments.all}}
         <br> Cross Listed {{section.cross_listed}}
         <ul>
             {% for section_class in section.sectionclass_set.all %}

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+
+<body>
+    <h1 id="app-name">Schedule Planner</h1>
+    <div>
+        <form action="{% url 'course_list:course_selection' %}" method="get">
+
+            <h3>Term</h3>
+            <input type="radio" id="term_spring" name="term" value="1">
+            <label for="term_spring">Spring</label><br>
+
+
+            <h3>Location</h3>
+            <input type="checkbox" id="campus_nb" name="location" value="nb">
+            <label for="campus_nb">New Brunswick</label><br>
+
+
+            <h3>Level</h3>
+            <input type="checkbox" id="level_u" name="level" value="U">
+            <label for="level_u">Undergraduate</label><br>
+
+            <input type="checkbox" id="level_g" name="level" value="G">
+            <label for="level_g">Graduate</label><br>
+
+            <input type="submit" value="Continue">
+        </form>
+    </div>
+</body>

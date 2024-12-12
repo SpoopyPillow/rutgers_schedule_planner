@@ -37,12 +37,23 @@ class Course(models.Model):
     core = ArrayField(models.JSONField(), default=list)
     prereqs = models.TextField()
     synopsis_url = models.CharField(max_length=255)
-    
+
     class Meta:
         indexes = [models.Index(fields=["school", "subject", "code"])]
 
     def __str___(self):
         return self.title
+
+
+class Comment(models.Model):
+    code = models.CharField(max_length=2)
+    description = models.CharField(max_length=255)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["code"], name="unique_comment")]
+        
+    def __str__(self):
+        return self.description
 
 
 class Section(models.Model):
@@ -56,7 +67,7 @@ class Section(models.Model):
     exam_code_text = models.CharField(max_length=255)
     notes = models.CharField(max_length=255)
     restrictions = models.CharField(max_length=255)
-    comments = ArrayField(models.JSONField(), default=list)
+    comments = models.ManyToManyField(Comment, related_name="section")
     cross_listed = ArrayField(models.JSONField(), default=list)
 
     class Meta:
@@ -73,6 +84,6 @@ class SectionClass(models.Model):
     campus_title = models.CharField(max_length=255)
     building = models.CharField(max_length=255)
     room = models.CharField(max_length=255)
-    
+
     class Meta:
         indexes = [models.Index(fields=["section", "day", "start_time"])]
