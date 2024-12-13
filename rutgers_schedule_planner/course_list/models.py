@@ -27,14 +27,21 @@ class Subject(models.Model):
         return self.title
 
 
+class Core(models.Model):
+    code = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+
+
 class Course(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     code = models.IntegerField()
+    supplement_code = models.CharField(max_length=255)
+    campus_code = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     level = models.CharField(max_length=1)
     credits = models.IntegerField(null=True)
-    core = ArrayField(models.JSONField(), default=list)
+    cores = models.ManyToManyField(Core, related_name="course")
     prereqs = models.TextField()
     synopsis_url = models.CharField(max_length=255)
 

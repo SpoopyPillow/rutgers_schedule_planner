@@ -8,7 +8,7 @@ from django.db import transaction
 from django.utils.dateparse import parse_time
 from django.forms.formsets import formset_factory
 
-from .models import School, Subject, Course, Comment, Section, SectionClass
+from .models import School, Subject, Core, Course, Comment, Section, SectionClass
 from .forms import StudentFilterForm, CourseFilterForm
 
 
@@ -34,7 +34,10 @@ def course_selection(request):
     if course_filters["subject"] is not None:
         filters["subject__code"] = course_filters["subject"]
 
-    courses = Course.objects.filter(**filters).order_by("school", "subject", "code")[0:5]
+    courses = Course.objects.none()
+
+    if any(course_filters.values()):
+        courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
     return render(
         request,
@@ -86,10 +89,11 @@ def update_courses(request):
                 "school": school,
                 "subject": subject,
                 "code": course_data["courseNumber"],
+                "supplement_code": course_data["supplementCode"],
+                "campus_code": course_data["campusCode"],
                 "title": course_data["title"],
                 "level": course_data["level"],
                 "credits": course_data["credits"],
-                "core": course_data["coreCodes"],
                 "prereqs": course_data["preReqNotes"],
                 "synopsis_url": course_data["synopsisUrl"],
             }
@@ -132,8 +136,23 @@ def update_courses(request):
         SectionClass.objects.bulk_create(section_classes)
 
         for course_data in data:
+            course = Course.objects.get(
+                school__code=course_data["school"]["code"],
+                subject__code=course_data["subject"],
+                code=course_data["courseNumber"],
+                supplement_code=course_data["supplementCode"],
+                campus_code=course_data["campusCode"],
+            )
+            for core_data in course_data["coreCodes"]:
+                core_fields = {
+                    "code": core_data["coreCode"],
+                    "description": core_data["description"],
+                }
+                core, _ = Core.objects.get_or_create(**core_fields)
+                course.cores.add(core)
+
             for section_data in course_data["sections"]:
-                section = Section.objects.get(index=section_data["index"])
+                section = course.section_set.get(index=section_data["index"])
 
                 for comment_data in section_data["comments"]:
                     comment_fields = {
