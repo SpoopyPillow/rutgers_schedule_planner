@@ -33,9 +33,11 @@ def course_selection(request):
         filters["school__code"] = course_filters["school"]
     if course_filters["subject"] is not None:
         filters["subject__code"] = course_filters["subject"]
+    if course_filters["core"] != '':
+        filters["cores__code"] = course_filters["core"]
 
     courses = Course.objects.none()
-
+    
     if any(course_filters.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
@@ -143,6 +145,7 @@ def update_courses(request):
                 supplement_code=course_data["supplementCode"],
                 campus_code=course_data["campusCode"],
             )
+            
             for core_data in course_data["coreCodes"]:
                 core_fields = {
                     "code": core_data["coreCode"],

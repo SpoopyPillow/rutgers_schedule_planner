@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import School, Subject
+from .models import School, Subject, Core
 
 
 class StudentFilterForm(forms.Form):
@@ -34,3 +34,8 @@ class CourseFilterForm(forms.Form):
         for subject in Subject.objects.all().order_by("code")
     ]
     subject = forms.IntegerField(widget=forms.Select(choices=subject_choices), required=False)
+
+    core_choices = [(None, "None")] + [
+        (core.code, str(core.code) + " " + core.description) for core in Core.objects.all().order_by("code")
+    ]
+    core = forms.CharField(widget=forms.Select(choices=core_choices), max_length=255, required=False)
