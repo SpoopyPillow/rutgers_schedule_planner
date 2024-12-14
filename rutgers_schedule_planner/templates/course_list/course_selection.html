@@ -16,7 +16,7 @@
                 <div id="course_filter">
                     {{course_form.as_p}}
                 </div>
-                <div id="section_filter">
+                <div id="specific_filter">
                     <p>Section Status</p>
                     <input type="checkbox" id="section_open" name="open_status" value="True" checked
                         onclick="filter_sections()">
@@ -40,7 +40,7 @@
             <div class="section_list">
                 <ul>
                     {% for section in course.section_set.all %}
-                    <div class="section_information" data_open_status={{section.open_status}}>
+                    <div class="section_information" data-open_status={{section.open_status}}>
                         <li>
                             Section {{section.number}}; Index {{section.index}}; Status {{section.open_status}};
                             Instructor

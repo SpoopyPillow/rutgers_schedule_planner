@@ -13,7 +13,7 @@ function filter_sections() {
     for (var i = 0; i < sections.length; i++) {
         var section = sections[i];
 
-        var open_status = section.getAttribute("data_open_status");
+        var open_status = section.getAttribute("data-open_status");
         if (filters.open_status.includes(open_status)) {
             section.style.display = "block";
         }
