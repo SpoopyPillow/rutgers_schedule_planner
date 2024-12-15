@@ -46,11 +46,13 @@ def course_selection(request):
         "campuses": set(),
         "credits": set(),
         "schools": set(),
+        "subjects": set(),
     }
     for course in courses:
         dynamic_filters["code_levels"].add(course.code_level())
         dynamic_filters["credits"].add(course.credits)
         dynamic_filters["schools"].add(course.school)
+        dynamic_filters["subjects"].add(course.subject)
 
         for section in course.section_set.all():
             for section_class in section.sectionclass_set.all():

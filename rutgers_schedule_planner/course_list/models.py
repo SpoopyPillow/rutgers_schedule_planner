@@ -13,13 +13,13 @@ class School(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     def __lt__(self, other):
         return self.code < other.code
-    
+
     def __gt__(self, other):
         return self.code > other.code
-    
+
     def __le__(self, other):
         return self.code <= other.code
 
@@ -28,7 +28,7 @@ class School(models.Model):
 
     def __eq__(self, other):
         return self.code == other.code
-    
+
     def __hash__(self):
         return hash(self.code)
 
@@ -43,6 +43,24 @@ class Subject(models.Model):
 
     def __str__(self):
         return self.title
+
+    def __lt__(self, other):
+        return self.code < other.code
+
+    def __gt__(self, other):
+        return self.code > other.code
+
+    def __le__(self, other):
+        return self.code <= other.code
+
+    def __ge__(self, other):
+        return self.code >= other.code
+
+    def __eq__(self, other):
+        return self.code == other.code
+
+    def __hash__(self):
+        return hash(self.code)
 
 
 class Core(models.Model):
@@ -68,9 +86,9 @@ class Course(models.Model):
 
     def __str___(self):
         return self.title
-    
+
     def code_level(self):
-        return  int(self.code/100) * 100
+        return int(self.code / 100) * 100
 
 
 class Comment(models.Model):
@@ -79,7 +97,7 @@ class Comment(models.Model):
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["code"], name="unique_comment")]
-        
+
     def __str__(self):
         return self.description
 

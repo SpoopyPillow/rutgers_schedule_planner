@@ -17,7 +17,8 @@ function filter_sections() {
     filters.code_level = form_values("code_level");
     filters.campus = form_values("campus");
     filters.credits = form_values("credits");
-    filters.school = form_values("school")
+    filters.school = form_values("school");
+    filters.subject = form_values("subject");
 
     var courses = document.getElementsByClassName("course_information");
     for (var i = 0; i < courses.length; i++) {
@@ -34,6 +35,10 @@ function filter_sections() {
         }
         var school = course.getAttribute("data-school");
         if (!filters.school.includes(school)) {
+            continue;
+        }
+        var subject = course.getAttribute("data-subject");
+        if (!filters.subject.includes(subject)) {
             continue;
         }
 
