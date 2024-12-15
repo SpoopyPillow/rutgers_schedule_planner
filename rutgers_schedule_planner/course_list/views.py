@@ -47,6 +47,7 @@ def course_selection(request):
         "credits": set(),
         "schools": set(),
         "subjects": set(),
+        "cores": set(),
     }
     for course in courses:
         dynamic_filters["code_levels"].add(course.code_level())
@@ -54,6 +55,12 @@ def course_selection(request):
         dynamic_filters["schools"].add(course.school)
         dynamic_filters["subjects"].add(course.subject)
 
+        for core in course.cores.all():
+            dynamic_filters["cores"].add(core)
+        if len(course.cores.all()) == 0:
+            dynamic_filters["cores"].add(Core(code="N/A", description="N/A"))
+
+        # TODO maybe add a method to do all of this for me
         for section in course.section_set.all():
             for section_class in section.sectionclass_set.all():
                 dynamic_filters["campuses"].add(section_class.campus_title)

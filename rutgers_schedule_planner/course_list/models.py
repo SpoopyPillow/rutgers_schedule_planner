@@ -67,6 +67,27 @@ class Core(models.Model):
     code = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.description
+
+    def __lt__(self, other):
+        return self.code < other.code
+
+    def __gt__(self, other):
+        return self.code > other.code
+
+    def __le__(self, other):
+        return self.code <= other.code
+
+    def __ge__(self, other):
+        return self.code >= other.code
+
+    def __eq__(self, other):
+        return self.code == other.code
+
+    def __hash__(self):
+        return hash(self.code)
+
 
 class Course(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)

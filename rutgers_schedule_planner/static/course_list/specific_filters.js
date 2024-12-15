@@ -19,6 +19,7 @@ function filter_sections() {
     filters.credits = form_values("credits");
     filters.school = form_values("school");
     filters.subject = form_values("subject");
+    filters.core = form_values("core")
 
     var courses = document.getElementsByClassName("course_information");
     for (var i = 0; i < courses.length; i++) {
@@ -39,6 +40,22 @@ function filter_sections() {
         }
         var subject = course.getAttribute("data-subject");
         if (!filters.subject.includes(subject)) {
+            continue;
+        }
+
+        var cores = course.getElementsByClassName("core_information");
+        var hide = true;
+        for (const core of cores) {
+            var core_code = core.getAttribute("data-core_code");
+            if (filters.core.includes(core_code)) {
+                hide = false;
+                break;
+            }
+        }
+        if (cores.length == 0 && filters.core.includes("N/A")) {
+            hide = false;
+        }
+        if (hide) {
             continue;
         }
 
