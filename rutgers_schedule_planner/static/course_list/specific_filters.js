@@ -16,11 +16,12 @@ function filter_sections() {
     filters.open_status = form_values("open_status");
     filters.code_level = form_values("code_level");
     filters.campus = form_values("campus");
-    filters.credits = form_values("credits")
+    filters.credits = form_values("credits");
+    filters.school = form_values("school")
 
     var courses = document.getElementsByClassName("course_information");
     for (var i = 0; i < courses.length; i++) {
-        course = courses[i];
+        var course = courses[i];
         course.classList.add("hidden")
 
         var code_level = course.getAttribute("data-code_level");
@@ -31,10 +32,14 @@ function filter_sections() {
         if (!filters.credits.includes(credits)) {
             continue;
         }
+        var school = course.getAttribute("data-school");
+        if (!filters.school.includes(school)) {
+            continue;
+        }
 
         var sections = course.getElementsByClassName("section_information");
         for (var j = 0; j < sections.length; j++) {
-            section = sections[j];
+            var section = sections[j];
             section.classList.add("hidden");
 
             var open_status = section.getAttribute("data-open_status");

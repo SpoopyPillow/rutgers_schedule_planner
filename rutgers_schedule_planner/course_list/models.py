@@ -13,6 +13,24 @@ class School(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def __lt__(self, other):
+        return self.code < other.code
+    
+    def __gt__(self, other):
+        return self.code > other.code
+    
+    def __le__(self, other):
+        return self.code <= other.code
+
+    def __ge__(self, other):
+        return self.code >= other.code
+
+    def __eq__(self, other):
+        return self.code == other.code
+    
+    def __hash__(self):
+        return hash(self.code)
 
 
 class Subject(models.Model):

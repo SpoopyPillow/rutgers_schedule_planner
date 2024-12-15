@@ -42,19 +42,28 @@
                 <p>Course Credits</p>
                 {% for credit in credits %}
                 {% if credit > 0 %}
-                <input type="checkbox" id={{credit}} name="credits" value={{credit}} checked onclick="filter_sections()">
+                <input type="checkbox" id={{credit}} name="credits" value={{credit}} checked
+                    onclick="filter_sections()">
                 <label for={{credit}}>{{credit}}</label><br>
                 {% endif %}
                 {% endfor %}
-                {% if credits.0 < 0 %}
-                <input type="checkbox" id={{credits.0}} name="credits" value={{credits.0}} checked onclick="filter_sections()">
-                <label for={{credits.0}}>Credits by arrangement</label><br>
-                {% endif %}
+                {% if credits.0 < 0 %} <input type="checkbox" id={{credits.0}} name="credits" value={{credits.0}}
+                    checked onclick="filter_sections()">
+                    <label for={{credits.0}}>Credits by arrangement</label><br>
+                    {% endif %}
+
+                    <p>School</p>
+                    {% for school in schools %}
+                    <input type="checkbox" id=school_{{school.code}} name="school" value={{school.code}} checked
+                        onclick="filter_sections()">
+                    <label for={{school}}>{{school.code}} - {{school.title}}</label><br>
+                    {% endfor %}
             </div>
         </div>
         <div id="course_list">
             {% for course in courses %}
-            <div class="course_information" data-code_level={{course.code_level}} data-credits={{course.credits}}>
+            <div class="course_information" data-code_level={{course.code_level}} data-credits={{course.credits}}
+                data-school={{course.school.code}}>
                 <button type="button" class="collapsible_course">
                     Title {{course.title}}; Code {{course.school.code}}:{{course.subject.code}}:{{course.code}};
                     Credits
