@@ -44,9 +44,11 @@ def course_selection(request):
     dynamic_filters = {
         "code_levels": set(),
         "campuses": set(),
+        "credits": set(),
     }
     for course in courses:
         dynamic_filters["code_levels"].add(course.code_level())
+        dynamic_filters["credits"].add(course.credits)
 
         for section in course.section_set.all():
             for section_class in section.sectionclass_set.all():
@@ -109,6 +111,9 @@ def update_courses(request):
                 "prereqs": course_data["preReqNotes"],
                 "synopsis_url": course_data["synopsisUrl"],
             }
+            if course_fields["credits"] is None:
+                course_fields["credits"] = -1
+
             course = Course(**course_fields)
             courses.append(course)
 
@@ -144,7 +149,7 @@ def update_courses(request):
                         section_class_fields["campus_title"] = "ONLINE"
                     elif not section_class_fields["campus_title"]:
                         section_class_fields["campus_title"] = "N/A"
-                        
+
                     section_class = SectionClass(**section_class_fields)
                     section_classes.append(section_class)
 

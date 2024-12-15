@@ -16,6 +16,7 @@ function filter_sections() {
     filters.open_status = form_values("open_status");
     filters.code_level = form_values("code_level");
     filters.campus = form_values("campus");
+    filters.credits = form_values("credits")
 
     var courses = document.getElementsByClassName("course_information");
     for (var i = 0; i < courses.length; i++) {
@@ -24,6 +25,10 @@ function filter_sections() {
 
         var code_level = course.getAttribute("data-code_level");
         if (!filters.code_level.includes(code_level)) {
+            continue;
+        }
+        var credits = course.getAttribute("data-credits");
+        if (!filters.credits.includes(credits)) {
             continue;
         }
 
@@ -38,18 +43,22 @@ function filter_sections() {
             }
 
             var section_classes = section.getElementsByClassName("section_class_information");
+            var hide = false;
             for (var k = 0; k < section_classes.length; k++) {
                 var section_class = section_classes[k];
 
                 var campus = section_class.getAttribute("data-campus");
-                console.log(filters.campus)
                 if (!filters.campus.includes(campus)) {
-                    continue;
+                    hide = true;
+                    break;
                 }
-
-                section.classList.remove("hidden");
-                course.classList.remove("hidden");
             }
+            if (hide) {
+                continue;
+            }
+
+            section.classList.remove("hidden");
+            course.classList.remove("hidden");
         }
     }
 }

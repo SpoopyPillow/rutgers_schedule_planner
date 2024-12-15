@@ -38,11 +38,23 @@
                 <input type="checkbox" id={{campus}} name="campus" value={{campus}} checked onclick="filter_sections()">
                 <label for={{campus}}>{{campus}}</label><br>
                 {% endfor %}
+
+                <p>Course Credits</p>
+                {% for credit in credits %}
+                {% if credit > 0 %}
+                <input type="checkbox" id={{credit}} name="credits" value={{credit}} checked onclick="filter_sections()">
+                <label for={{credit}}>{{credit}}</label><br>
+                {% endif %}
+                {% endfor %}
+                {% if credits.0 < 0 %}
+                <input type="checkbox" id={{credits.0}} name="credits" value={{credits.0}} checked onclick="filter_sections()">
+                <label for={{credits.0}}>Credits by arrangement</label><br>
+                {% endif %}
             </div>
         </div>
         <div id="course_list">
             {% for course in courses %}
-            <div class="course_information" data-code_level={{course.code_level}}>
+            <div class="course_information" data-code_level={{course.code_level}} data-credits={{course.credits}}>
                 <button type="button" class="collapsible_course">
                     Title {{course.title}}; Code {{course.school.code}}:{{course.subject.code}}:{{course.code}};
                     Credits
