@@ -33,22 +33,32 @@ def course_selection(request):
         filters["school__code"] = course_filters["school"]
     if course_filters["subject"] is not None:
         filters["subject__code"] = course_filters["subject"]
-    if course_filters["core"] != '':
+    if course_filters["core"] != "":
         filters["cores__code"] = course_filters["core"]
 
     courses = Course.objects.none()
-    
+
     if any(course_filters.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
+
+    dynamic_filters = {
+        "code_levels": set(),
+        "campuses": set(),
+    }
+    for course in courses:
+        dynamic_filters["code_levels"].add(course.code_level())
+
+        for section in course.section_set.all():
+            for section_class in section.sectionclass_set.all():
+                dynamic_filters["campuses"].add(section_class.campus_title)
+
+    for key, value in dynamic_filters.items():
+        dynamic_filters[key] = sorted(list(value))
 
     return render(
         request,
         "course_list/course_selection.html",
-        {
-            "student_form": student_form,
-            "course_form": course_form,
-            "courses": courses,
-        },
+        {"student_form": student_form, "course_form": course_form, "courses": courses, **dynamic_filters},
     )
 
 
@@ -130,6 +140,11 @@ def update_courses(request):
                         "building": section_class_data["buildingCode"],
                         "room": section_class_data["roomNumber"],
                     }
+                    if section_class_fields["campus_num"] == "O":
+                        section_class_fields["campus_title"] = "ONLINE"
+                    elif not section_class_fields["campus_title"]:
+                        section_class_fields["campus_title"] = "N/A"
+                        
                     section_class = SectionClass(**section_class_fields)
                     section_classes.append(section_class)
 
@@ -145,7 +160,7 @@ def update_courses(request):
                 supplement_code=course_data["supplementCode"],
                 campus_code=course_data["campusCode"],
             )
-            
+
             for core_data in course_data["coreCodes"]:
                 core_fields = {
                     "code": core_data["coreCode"],

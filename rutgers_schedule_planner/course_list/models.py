@@ -50,6 +50,9 @@ class Course(models.Model):
 
     def __str___(self):
         return self.title
+    
+    def code_level(self):
+        return  int(self.code/100) * 100
 
 
 class Comment(models.Model):
