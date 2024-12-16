@@ -20,6 +20,7 @@ function filter_sections() {
     filters.school = form_values("school");
     filters.subject = form_values("subject");
     filters.core = form_values("core")
+    console.log(filters)
 
     var courses = document.getElementsByClassName("course_information");
     for (var i = 0; i < courses.length; i++) {
@@ -90,4 +91,9 @@ function filter_sections() {
     }
 }
 
+var dynamic_filters = document.getElementById("dynamic_filters").getElementsByTagName("input")
+
+for (var i = 0; i < dynamic_filters.length; i++) {
+    dynamic_filters[i].addEventListener("click", filter_sections);
+}
 filter_sections();

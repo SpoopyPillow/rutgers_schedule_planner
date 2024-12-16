@@ -9,7 +9,7 @@ from django.utils.dateparse import parse_time
 from django.forms.formsets import formset_factory
 
 from .models import School, Subject, Core, Course, Comment, Section, SectionClass
-from .forms import StudentFilterForm, CourseFilterForm
+from .forms import StudentFilterForm, CourseFilterForm, DynamicFilterForm
 
 
 def student_related(request):
@@ -37,9 +37,10 @@ def course_selection(request):
         filters["cores__code"] = course_filters["core"]
 
     courses = Course.objects.none()
-
     if any(course_filters.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
+
+    dynamic_form = DynamicFilterForm(courses=courses)
 
     dynamic_filters = {
         "code_levels": set(),
@@ -71,7 +72,13 @@ def course_selection(request):
     return render(
         request,
         "course_list/course_selection.html",
-        {"student_form": student_form, "course_form": course_form, "courses": courses, **dynamic_filters},
+        {
+            "student_form": student_form,
+            "course_form": course_form,
+            "dynamic_form": dynamic_form,
+            "courses": courses,
+            **dynamic_filters,
+        },
     )
 
 

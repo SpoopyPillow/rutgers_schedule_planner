@@ -39,3 +39,44 @@ class CourseFilterForm(forms.Form):
         (core.code, str(core.code) + " " + core.description) for core in Core.objects.all().order_by("code")
     ]
     core = forms.CharField(widget=forms.Select(choices=core_choices), max_length=255, required=False)
+
+
+class DynamicFilterForm(forms.Form):
+    open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    credits = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    school = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    subject = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    core = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        courses = kwargs.pop("courses")
+        super(DynamicFilterForm, self).__init__(*args, **kwargs)
+        
+        choices = {field: set() for field in self.fields.keys()}
+        
+        choices["open_status"].add((True, "Open"))
+        choices["open_status"].add((False, "Closed"))
+        
+        for course in courses:
+            choices["code_level"].add((course.code_level(), course.code_level()))
+            choices["credits"].add((course.credits, course.credits))
+            choices["school"].add((course.school.code, course.school.title))
+            choices["subject"].add((course.subject.code, course.subject.title))
+
+            for core in course.cores.all():
+                choices["core"].add((core.code, core.description))
+            if len(course.cores.all()) == 0:
+                core = Core(code="N/A", description="N/A")
+                choices["core"].add((core.code, core.description))
+
+            # TODO maybe add a method to do all of this for me
+            for section in course.section_set.all():
+                for section_class in section.sectionclass_set.all():
+                    choices["campus"].add((section_class.campus_title, section_class.campus_title))
+                    
+        for field, choices in choices.items():
+            choices = list(choices)
+            self.fields[field].choices = sorted(choices)
+            self.fields[field].initial = [choice[0] for choice in choices]
