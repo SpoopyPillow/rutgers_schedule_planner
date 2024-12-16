@@ -4,10 +4,16 @@ function form_values(name) {
     }).toArray();
 }
 
+function cleanup_list() {
+    $(".course_information:visible").filter(function () {
+        return $(this).find(".section_information:not([style*='display: none'])").length == 0;
+    }).hide();
+}
+
 $(document).ready(function () {
     $("#dynamic_filters input").click(function () {
-        var courses = $(".course_information")
-        var sections = $(".section_information")
+        var courses = $(".course_information");
+        var sections = $(".section_information");
         courses.show();
         sections.show();
 
@@ -18,7 +24,7 @@ $(document).ready(function () {
         filters.credits = form_values("credits");
         filters.school = form_values("school");
         filters.subject = form_values("subject");
-        filters.core = form_values("core")
+        filters.core = form_values("core");
 
         sections.filter(function () {
             return !filters.open_status.includes($(this).attr("data-open_status"));
@@ -62,5 +68,7 @@ $(document).ready(function () {
             }
             return true;
         }).hide();
+
+        cleanup_list();
     });
 });
