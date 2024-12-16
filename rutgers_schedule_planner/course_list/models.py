@@ -140,6 +140,8 @@ class Section(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
         indexes = [models.Index(fields=["index"])]
+    
+    # TODO add method to get sectionclass campuses
 
 
 class SectionClass(models.Model):

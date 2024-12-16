@@ -1,99 +1,66 @@
 function form_values(name) {
-    var form = document.getElementsByName(name);
-    filters = []
-    for (var i = 0; i < form.length; i++) {
-        if (form[i].checked) {
-            filters.push(form[i].getAttribute("value"));
-        }
-    }
-    return filters;
+    return $("input[type=checkbox][name=" + name + "]:checked").map(function () {
+        return $(this).val();
+    }).toArray();
 }
 
-function filter_sections() {
-    var sections = document.getElementsByClassName("section_information");
-    var filters = {};
+$(document).ready(function () {
+    $("#dynamic_filters input").click(function () {
+        var courses = $(".course_information")
+        var sections = $(".section_information")
+        courses.show();
+        sections.show();
 
-    filters.open_status = form_values("open_status");
-    filters.code_level = form_values("code_level");
-    filters.campus = form_values("campus");
-    filters.credits = form_values("credits");
-    filters.school = form_values("school");
-    filters.subject = form_values("subject");
-    filters.core = form_values("core")
-    console.log(filters)
+        var filters = {};
+        filters.open_status = form_values("open_status");
+        filters.code_level = form_values("code_level");
+        filters.campus = form_values("campus");
+        filters.credits = form_values("credits");
+        filters.school = form_values("school");
+        filters.subject = form_values("subject");
+        filters.core = form_values("core")
 
-    var courses = document.getElementsByClassName("course_information");
-    for (var i = 0; i < courses.length; i++) {
-        var course = courses[i];
-        course.classList.add("hidden")
+        sections.filter(function () {
+            return !filters.open_status.includes($(this).attr("data-open_status"));
+        }).hide();
 
-        var code_level = course.getAttribute("data-code_level");
-        if (!filters.code_level.includes(code_level)) {
-            continue;
-        }
-        var credits = course.getAttribute("data-credits");
-        if (!filters.credits.includes(credits)) {
-            continue;
-        }
-        var school = course.getAttribute("data-school");
-        if (!filters.school.includes(school)) {
-            continue;
-        }
-        var subject = course.getAttribute("data-subject");
-        if (!filters.subject.includes(subject)) {
-            continue;
-        }
+        courses.filter(function () {
+            return !filters.code_level.includes($(this).attr("data-code_level"));
+        }).hide();
 
-        var cores = course.getElementsByClassName("core_information");
-        var hide = true;
-        for (const core of cores) {
-            var core_code = core.getAttribute("data-core_code");
-            if (filters.core.includes(core_code)) {
-                hide = false;
-                break;
-            }
-        }
-        if (cores.length == 0 && filters.core.includes("N/A")) {
-            hide = false;
-        }
-        if (hide) {
-            continue;
-        }
-
-        var sections = course.getElementsByClassName("section_information");
-        for (var j = 0; j < sections.length; j++) {
-            var section = sections[j];
-            section.classList.add("hidden");
-
-            var open_status = section.getAttribute("data-open_status");
-            if (!filters.open_status.includes(open_status)) {
-                continue;
-            }
-
-            var section_classes = section.getElementsByClassName("section_class_information");
-            var hide = false;
-            for (var k = 0; k < section_classes.length; k++) {
-                var section_class = section_classes[k];
-
-                var campus = section_class.getAttribute("data-campus");
-                if (!filters.campus.includes(campus)) {
-                    hide = true;
-                    break;
+        sections.filter(function () {
+            var section_classes = $(this).find(".section_class_information");
+            for (const section_class of section_classes) {
+                if (!filters.campus.includes(section_class.getAttribute("data-campus"))) {
+                    return true;
                 }
             }
-            if (hide) {
-                continue;
+            return false;
+        }).hide();
+
+        courses.filter(function () {
+            return !filters.credits.includes($(this).attr("data-credits"));
+        }).hide();
+
+        courses.filter(function () {
+            return !filters.school.includes($(this).attr("data-school"));
+        }).hide();
+
+        courses.filter(function () {
+            return !filters.subject.includes($(this).attr("data-subject"));
+        }).hide();
+
+        courses.filter(function () {
+            var cores = $(this).find(".core_information");
+            if (cores.length == 0 && filters.core.includes("N/A")) {
+                return false;
             }
-
-            section.classList.remove("hidden");
-            course.classList.remove("hidden");
-        }
-    }
-}
-
-var dynamic_filters = document.getElementById("dynamic_filters").getElementsByTagName("input")
-
-for (var i = 0; i < dynamic_filters.length; i++) {
-    dynamic_filters[i].addEventListener("click", filter_sections);
-}
-filter_sections();
+            for (const core of cores) {
+                if (filters.core.includes(core.getAttribute("data-core_code"))) {
+                    return false;
+                }
+            }
+            return true;
+        }).hide();
+    });
+});
