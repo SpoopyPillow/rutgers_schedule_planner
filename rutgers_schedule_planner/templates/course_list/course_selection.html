@@ -12,9 +12,9 @@
             <form action="{% url 'course_list:course_selection' %}" method="get">
                 <input type="submit" value="Filter">
                 <div class="hidden">{{ student_form.as_p }}</div>
-                <div id="course_filters">{{ course_form.as_p }}</div>
+                <div id="course_search">{{ course_search_form.as_p }}</div>
             </form>
-            <div id="dynamic_filters">{{ dynamic_form.as_p }}</div>
+            <div id="course_filters">{{ course_filter_form.as_p }}</div>
         </div>
         <div id="course_list">
             {% for course in courses %}
@@ -25,9 +25,7 @@
                      data-subject="{{ course.subject.code }}">
                     <div class="collapsible_course">
                         <div class="course_display">
-                            <span class="add_course">
-                                <button>+</button>
-                            </span>
+                            <button class="add_course">+</button>
                             <span class="course_code">{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
                             <span class="course_title">{{ course.title }}</span>
                             <span class="course_credits">{{ course.credits }} cr.</span>
@@ -55,30 +53,26 @@
                                 <th>Instructor</th>
                             </tr>
                             {% for section in course.section_set.all %}
-                                <tr>
-                                    <div class="section_information"
-                                         data-open_status="{{ section.open_status }}">
-                                        <td>{{ section.number }}</td>
-                                        <td>{{ section.open_status }}</td>
-                                        <td>{{ section.index }}</td>
-                                        <td>
-                                            <table class="section_class_list">
-                                                {% for section_class in section.sectionclass_set.all|dictsort:"" %}
-                                                    <tr>
-                                                        <div class="section_class_information"
-                                                             data-campus="{{ section_class.campus_title }}">
-                                                            <td>{{ section_class.day }}</td>
-                                                            <td>{{ section_class.start_time }}-{{ section_class.end_time }}</td>
-                                                            <td>{{ section_class.building }}-{{ section_class.room }}</td>
-                                                            <td>{{ section_class.campus_title }}</td>
-                                                        </div>
-                                                    </tr>
-                                                {% endfor %}
-                                            </table>
-                                        </td>
-                                        <td>{{ section.exam_code }}</td>
-                                        <td>{{ section.instructor }}</td>
-                                    </div>
+                                <tr class="section_information"
+                                    data-open_status="{{ section.open_status }}">
+                                    <td>{{ section.number }}</td>
+                                    <td>{{ section.open_status }}</td>
+                                    <td>{{ section.index }}</td>
+                                    <td>
+                                        <table class="section_class_list">
+                                            {% for section_class in section.sectionclass_set.all %}
+                                                <tr class="section_class_information"
+                                                    data-campus="{{ section_class.campus_title }}">
+                                                    <td>{{ section_class.day }}</td>
+                                                    <td>{{ section_class.start_time }}-{{ section_class.end_time }}</td>
+                                                    <td>{{ section_class.building }}-{{ section_class.room }}</td>
+                                                    <td>{{ section_class.campus_title }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </td>
+                                    <td>{{ section.exam_code }}</td>
+                                    <td>{{ section.instructor }}</td>
                                 </tr>
                             {% endfor %}
                         </table>
@@ -88,5 +82,5 @@
         </div>
     </div>
     <script src="{% static 'course_list/collapsible_course.js' %}"></script>
-    <script src="{% static 'course_list/specific_filters.js' %}"></script>
+    <script src="{% static 'course_list/course_filters.js' %}"></script>
 </body>

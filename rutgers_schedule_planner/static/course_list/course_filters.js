@@ -11,7 +11,7 @@ function cleanup_list() {
 }
 
 $(document).ready(function () {
-    $("#dynamic_filters input").click(function () {
+    $("#course_filters input").click(function () {
         var courses = $(".course_information");
         var sections = $(".section_information");
         courses.show();
@@ -36,7 +36,9 @@ $(document).ready(function () {
 
         sections.filter(function () {
             var section_classes = $(this).find(".section_class_information");
+            console.log($(this).find(".section_class_information"))
             for (const section_class of section_classes) {
+                console.log(section_class)
                 if (!filters.campus.includes(section_class.getAttribute("data-campus"))) {
                     return true;
                 }

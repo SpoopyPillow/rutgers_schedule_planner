@@ -1,54 +1,53 @@
 import requests
 import json
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
-from django.forms.formsets import formset_factory
 
 from .models import School, Subject, Core, Course, Comment, Section, SectionClass
-from .forms import StudentFilterForm, CourseFilterForm, DynamicFilterForm
+from .forms import StudentRelatedForm, CourseSearchForm, CourseFilterForm
 
 
 def student_related(request):
-    return render(request, "course_list/student_related.html", {"form": StudentFilterForm})
+    return render(request, "course_list/student_related.html", {"form": StudentRelatedForm})
 
 
 def course_selection(request):
     if not request.method == "GET":
         raise Http404
-    student_form = StudentFilterForm(request.GET)
-    course_form = CourseFilterForm(request.GET)
+    student_form = StudentRelatedForm(request.GET)
+    course_search_form = CourseSearchForm(request.GET)
 
-    if not student_form.is_valid() or not course_form.is_valid():
+    if not student_form.is_valid() or not course_search_form.is_valid():
         return HttpResponse("invalid")
-    student_filters = student_form.cleaned_data
-    course_filters = course_form.cleaned_data
+    student = student_form.cleaned_data
+    search = course_search_form.cleaned_data
 
-    filters = {"level__in": student_filters["levels"]}
+    filters = {"level__in": student["levels"]}
 
-    if course_filters["school"] is not None:
-        filters["school__code"] = course_filters["school"]
-    if course_filters["subject"] is not None:
-        filters["subject__code"] = course_filters["subject"]
-    if course_filters["core"] != "":
-        filters["cores__code"] = course_filters["core"]
+    if search["school"] is not None:
+        filters["school__code"] = search["school"]
+    if search["subject"] is not None:
+        filters["subject__code"] = search["subject"]
+    if search["core"] != "":
+        filters["cores__code"] = search["core"]
 
     courses = Course.objects.none()
-    if any(course_filters.values()):
+    if any(search.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
-    dynamic_form = DynamicFilterForm(courses=courses)
+    course_filter_form = CourseFilterForm(courses=courses)
 
     return render(
         request,
         "course_list/course_selection.html",
         {
             "student_form": student_form,
-            "course_form": course_form,
-            "dynamic_form": dynamic_form,
+            "course_search_form": course_search_form,
+            "course_filter_form": course_filter_form,
             "courses": courses,
         },
     )

@@ -3,7 +3,7 @@ from django import forms
 from .models import School, Subject, Core
 
 
-class StudentFilterForm(forms.Form):
+class StudentRelatedForm(forms.Form):
     term_choices = [
         ("1", "Spring"),
     ]
@@ -23,7 +23,7 @@ class StudentFilterForm(forms.Form):
     levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
 
 
-class CourseFilterForm(forms.Form):
+class CourseSearchForm(forms.Form):
     school_choices = [(None, "None")] + [
         (school.code, str(school.code) + " " + school.title) for school in School.objects.all().order_by("code")
     ]
@@ -41,7 +41,7 @@ class CourseFilterForm(forms.Form):
     core = forms.CharField(widget=forms.Select(choices=core_choices), max_length=255, required=False)
 
 
-class DynamicFilterForm(forms.Form):
+class CourseFilterForm(forms.Form):
     open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
@@ -52,7 +52,7 @@ class DynamicFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         courses = kwargs.pop("courses")
-        super(DynamicFilterForm, self).__init__(*args, **kwargs)
+        super(CourseFilterForm, self).__init__(*args, **kwargs)
         
         choices = {field: set() for field in self.fields.keys()}
         
