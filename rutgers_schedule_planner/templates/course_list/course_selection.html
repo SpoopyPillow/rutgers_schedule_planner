@@ -23,64 +23,102 @@
                      data-credits="{{ course.credits }}"
                      data-school="{{ course.school.code }}"
                      data-subject="{{ course.subject.code }}">
-                    <button type="button" class="collapsible_course">
-                        Title {{ course.title }}; Code {{ course.school.code }}:{{ course.subject.code }}:{{ course.code }};
-                        Credits {{ course.credits }}; Level {{ course.level }}
-                    </button>
+                    <div class="collapsible_course">
+                        <div class="course_display">
+                            <span class="add_course">
+                                <button>+</button>
+                            </span>
+                            <span class="course_code">{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
+                            <span class="course_title">{{ course.title }}</span>
+                            <span class="course_credits">{{ course.credits }} cr.</span>
+                        </div>
+                    </div>
                     <div class="course_content">
                         <div class="cores_list">
-                            <p>Cores</p>
-                            <ul>
-                                {% for core in course.cores.all %}
-                                    <li>
-                                        <div class="core_information" data-core_code="{{ core.code }}">{{ core.code }} - {{ core.description }}</div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                            Cores
+                            {% for core in course.cores.all %}
+                                <span class="core_information" data-core_code="{{ core.code }}">
+                                    {{ core.description }} ({{ core.code }})
+                                    {% if not forloop.last %},{% endif %}
+
+                                </span>
+                            {% endfor %}
                         </div>
 
-                        <div class="section_list">
-                            <p>Sections</p>
-                            <ul>
-                                {% for section in course.section_set.all %}
-                                    <li>
-                                        <div class="section_information"
-                                             data-open_status="{{ section.open_status }}">
-                                            Section {{ section.number }}; Index {{ section.index }}; Status {{ section.open_status }};
-                                            Instructor
-                                            {{ section.instructor }}; Exam {{ section.exam_code_text }}
-                                            <br>
-                                            Subtitle {{ section.subtitle }}
-                                            <br>
-                                            Notes {{ section.notes }}
-                                            <br>
-                                            Restrictions {{ section.restrictions }}
-                                            <br>
-                                            Comments {{ section.comments.all }}
-                                            <br>
-                                            Cross Listed {{ section.cross_listed }}
-                                            <ul>
-                                                {% for section_class in section.sectionclass_set.all %}
-                                                    <li>
+                        <table class="section_list">
+                            <tr>
+                                <th>Sec</th>
+                                <th>Status</th>
+                                <th>Index</th>
+                                <th>Meeting Times/Locations</th>
+                                <th>Exam Code</th>
+                                <th>Instructor</th>
+                            </tr>
+                            {% for section in course.section_set.all %}
+                                <tr>
+                                    <div class="section_information"
+                                         data-open_status="{{ section.open_status }}">
+                                        <td>{{ section.number }}</td>
+                                        <td>{{ section.open_status }}</td>
+                                        <td>{{ section.index }}</td>
+                                        <td>
+                                            <table class="section_class_list">
+                                                {% for section_class in section.sectionclass_set.all|dictsort:"" %}
+                                                    <tr>
                                                         <div class="section_class_information"
                                                              data-campus="{{ section_class.campus_title }}">
-                                                            Campus Num {{ section_class.campus_num }}; Day {{ section_class.day }};
-                                                            Start
-                                                            Time
-                                                            {{ section_class.start_time }}; End Time {{ section_class.end_time }};
-                                                            Campus
-                                                            {{ section_class.campus_title }}; Building {{ section_class.building }};
-                                                            Room
-                                                            {{ section_class.room }}
+                                                            <td>{{ section_class.day }}</td>
+                                                            <td>{{ section_class.start_time }}-{{ section_class.end_time }}</td>
+                                                            <td>{{ section_class.building }}-{{ section_class.room }}</td>
+                                                            <td>{{ section_class.campus_title }}</td>
                                                         </div>
-                                                    </li>
+                                                    </tr>
                                                 {% endfor %}
-                                            </ul>
-                                        </div>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+                                            </table>
+                                        </td>
+                                        <td>{{ section.exam_code }}</td>
+                                        <td>{{ section.instructor }}</td>
+                                    </div>
+                                </tr>
+                            {% endfor %}
+                        </table>
+
+                        <!-- <div class="section_list">
+                            <p>Sections</p>
+                            {% for section in course.section_set.all %}
+                                <div class="section_information" data-open_status="{{ section.open_status }}">
+                                    Section {{ section.number }}; Index {{ section.index }}; Status {{ section.open_status }};
+                                    Instructor
+                                    {{ section.instructor }}; Exam {{ section.exam_code_text }}
+                                    <br>
+                                    Subtitle {{ section.subtitle }}
+                                    <br>
+                                    Notes {{ section.notes }}
+                                    <br>
+                                    Restrictions {{ section.restrictions }}
+                                    <br>
+                                    Comments {{ section.comments.all }}
+                                    <br>
+                                    Cross Listed {{ section.cross_listed }}
+                                    <ul>
+                                        {% for section_class in section.sectionclass_set.all %}
+                                            <li>
+                                                <div class="section_class_information" data-campus="{{ section_class.campus_title }}">
+                                                    Campus Num {{ section_class.campus_num }}; Day {{ section_class.day }};
+                                                    Start
+                                                    Time
+                                                    {{ section_class.start_time }}; End Time {{ section_class.end_time }};
+                                                    Campus
+                                                    {{ section_class.campus_title }}; Building {{ section_class.building }};
+                                                    Room
+                                                    {{ section_class.room }}
+                                                </div>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div> -->
                     </div>
                 </div>
             {% endfor %}

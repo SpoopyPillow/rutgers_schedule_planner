@@ -21,13 +21,20 @@
 
 .collapsible_course {
     background-color: #777;
-    color: white;
     cursor: pointer;
-    padding: 18px;
-    width: 100%;
+    padding: 10px;
     border: none;
     text-align: left;
     outline: none;
+}
+
+.course_display {
+    display: flex;
+}
+
+.course_display span {
+    flex: 1;
+    color: white;
     font-size: 15px;
 }
 
@@ -37,12 +44,7 @@
 }
 
 .course_content {
-    padding: 0 18px;
     display: none;
     overflow: hidden;
     background-color: #f1f1f1;
-}
-
-.hidden {
-    display: none;
 }
