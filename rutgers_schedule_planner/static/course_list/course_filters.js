@@ -1,76 +1,107 @@
 function form_values(name) {
-    return $("input[type=checkbox][name=" + name + "]:checked").map(function () {
-        return $(this).val();
-    }).toArray();
+    return Array.from(document.querySelectorAll("input[type=checkbox][name=" + name + "]:checked"))
+        .map(function (element) {
+            return element.getAttribute("value");
+        })
 }
 
 function cleanup_list() {
-    $(".course_information:visible").filter(function () {
-        return $(this).find(".section_information:not([style*='display: none'])").length == 0;
-    }).hide();
+    Array.from(document.querySelectorAll(".course_information"))
+        .filter((course) => {
+            return course.querySelectorAll(".section_information:not([style*='display: none'])").length == 0;
+        })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
 }
 
-$(document).ready(function () {
-    $("#course_filters input").click(function () {
-        var courses = $(".course_information");
-        var sections = $(".section_information");
-        courses.show();
-        sections.show();
+function filter_courses() {
+    const courses = Array.from(document.querySelectorAll(".course_information"));
+    const sections = Array.from(document.querySelectorAll(".section_information"));
 
-        var filters = {};
-        filters.open_status = form_values("open_status");
-        filters.code_level = form_values("code_level");
-        filters.campus = form_values("campus");
-        filters.credits = form_values("credits");
-        filters.school = form_values("school");
-        filters.subject = form_values("subject");
-        filters.core = form_values("core");
+    courses.forEach(element => {
+        element.style.display = "block"
+    })
+    sections.forEach(element => {
+        element.style.display = "table-row"
+    })
 
-        sections.filter(function () {
-            return !filters.open_status.includes($(this).attr("data-open_status"));
-        }).hide();
+    var filters = {};
+    filters.open_status = form_values("open_status");
+    filters.code_level = form_values("code_level");
+    filters.campus = form_values("campus");
+    filters.credits = form_values("credits");
+    filters.school = form_values("school");
+    filters.subject = form_values("subject");
+    filters.core = form_values("core");
 
-        courses.filter(function () {
-            return !filters.code_level.includes($(this).attr("data-code_level"));
-        }).hide();
+    sections.filter((section) => {
+        return !filters.open_status.includes(section.getAttribute("data-open_status"));
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
 
-        sections.filter(function () {
-            var section_classes = $(this).find(".section_class_information");
-            console.log($(this).find(".section_class_information"))
-            for (const section_class of section_classes) {
-                console.log(section_class)
-                if (!filters.campus.includes(section_class.getAttribute("data-campus"))) {
-                    return true;
-                }
+    courses.filter((course) => {
+        return !filters.code_level.includes(course.getAttribute("data-code_level"));
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
+
+    sections.filter((section) => {
+        var section_classes = section.querySelectorAll(".section_class_information");
+        for (const section_class of section_classes) {
+            if (!filters.campus.includes(section_class.getAttribute("data-campus"))) {
+                return true;
             }
+        }
+        return false;
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
+
+    courses.filter((course) => {
+        return !filters.credits.includes(course.getAttribute("data-credits"));
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
+
+    courses.filter((course) => {
+        return !filters.school.includes(course.getAttribute("data-school"));
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
+
+    courses.filter((course) => {
+        return !filters.subject.includes(course.getAttribute("data-subject"));
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
+
+    courses.filter((course) => {
+        var cores = course.querySelectorAll(".core_information");
+        if (cores.length == 0 && filters.core.includes("N/A")) {
             return false;
-        }).hide();
-
-        courses.filter(function () {
-            return !filters.credits.includes($(this).attr("data-credits"));
-        }).hide();
-
-        courses.filter(function () {
-            return !filters.school.includes($(this).attr("data-school"));
-        }).hide();
-
-        courses.filter(function () {
-            return !filters.subject.includes($(this).attr("data-subject"));
-        }).hide();
-
-        courses.filter(function () {
-            var cores = $(this).find(".core_information");
-            if (cores.length == 0 && filters.core.includes("N/A")) {
+        }
+        for (const core of cores) {
+            if (filters.core.includes(core.getAttribute("data-core_code"))) {
                 return false;
             }
-            for (const core of cores) {
-                if (filters.core.includes(core.getAttribute("data-core_code"))) {
-                    return false;
-                }
-            }
-            return true;
-        }).hide();
+        }
+        return true;
+    })
+        .forEach((element) => {
+            element.style.display = "none";
+        })
 
-        cleanup_list();
-    });
-});
+    cleanup_list();
+}
+
+document.querySelectorAll("#course_filters input").forEach(element => {
+    element.addEventListener("click", filter_courses)
+})
