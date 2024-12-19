@@ -13,7 +13,7 @@
     <div id="content">
         <div id="course_selection" class="tab_content">
             <div id="filter_sidebar">
-                <form action="{% url 'course_list:load_course_selection_forms' %}"
+                <form action="{% url 'course_list:load_schedule_planner_forms' %}"
                       method="post">
                     {% csrf_token %}
                     <input type="submit" value="Filter">

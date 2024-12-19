@@ -8,7 +8,7 @@
 <body>
     <h1 id="app-name">Schedule Planner</h1>
     <div>
-        <form action="{% url 'course_list:load_course_selection_forms' %}" method="post">
+        <form action="{% url 'course_list:load_schedule_planner_forms' %}" method="post">
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Continue">

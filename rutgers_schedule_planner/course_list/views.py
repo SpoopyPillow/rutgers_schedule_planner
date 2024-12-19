@@ -15,7 +15,7 @@ def student_related(request):
     return render(request, "course_list/student_related.html", {"form": StudentRelatedForm})
 
 
-def load_course_selection_forms(request):
+def load_schedule_planner_forms(request):
     student_form = StudentRelatedForm(request.POST)
     course_search_form = CourseSearchForm(request.POST)
 
@@ -26,10 +26,10 @@ def load_course_selection_forms(request):
     
     request.session["student_related"] = student
     request.session["course_search"] = course_search
-    return HttpResponseRedirect(reverse("course_list:course_selection"))
+    return HttpResponseRedirect(reverse("course_list:schedule_planner"))
 
 
-def course_selection(request):
+def schedule_planner(request):
     if not request.method == "GET":
         raise Http404
     
@@ -56,7 +56,7 @@ def course_selection(request):
 
     return render(
         request,
-        "course_list/course_selection.html",
+        "course_list/schedule_planner.html",
         {
             "student_form": student_form,
             "course_search_form": course_search_form,
