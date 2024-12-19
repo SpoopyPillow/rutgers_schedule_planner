@@ -2,7 +2,7 @@ import requests
 import json
 
 from django.shortcuts import render
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
@@ -15,16 +15,29 @@ def student_related(request):
     return render(request, "course_list/student_related.html", {"form": StudentRelatedForm})
 
 
-def course_selection(request):
-    if not request.method == "GET":
-        raise Http404
-    student_form = StudentRelatedForm(request.GET)
-    course_search_form = CourseSearchForm(request.GET)
+def load_course_selection_forms(request):
+    student_form = StudentRelatedForm(request.POST)
+    course_search_form = CourseSearchForm(request.POST)
 
     if not student_form.is_valid() or not course_search_form.is_valid():
         return HttpResponse("invalid")
     student = student_form.cleaned_data
-    search = course_search_form.cleaned_data
+    course_search = course_search_form.cleaned_data
+    
+    request.session["student_related"] = student
+    request.session["course_search"] = course_search
+    return HttpResponseRedirect(reverse("course_list:course_selection"))
+
+
+def course_selection(request):
+    if not request.method == "GET":
+        raise Http404
+    
+    student = request.session["student_related"]
+    search = request.session["course_search"]
+    
+    student_form = StudentRelatedForm(initial=student)
+    course_search_form = CourseSearchForm(initial=search)
 
     filters = {"level__in": student["levels"]}
 

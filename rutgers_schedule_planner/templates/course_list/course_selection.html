@@ -6,83 +6,92 @@
 </head>
 
 <body>
-    <div id="tablist">
-        <div id="course_selection" class="tab">Select Courses</div>
-        <div id="section_selection" class="tab">Select Sections</div>
+    <div id="tab_list">
+        <div id="tab-course_selection" class="tab_link">Select Courses</div>
+        <div id="tab-section_selection" class="tab_link">Select Sections</div>
     </div>
     <div id="content">
-        <div id="filter_sidebar">
-            <form action="{% url 'course_list:course_selection' %}" method="get">
-                <input type="submit" value="Filter">
-                <div class="hidden">{{ student_form.as_p }}</div>
-                <div id="course_search">{{ course_search_form.as_p }}</div>
-            </form>
-            <div id="course_filters">{{ course_filter_form.as_p }}</div>
-        </div>
-        <div id="course_list">
-            {% for course in courses %}
-                <div class="course_information"
-                     data-code_level="{{ course.code_level }}"
-                     data-credits="{{ course.credits }}"
-                     data-school="{{ course.school.code }}"
-                     data-subject="{{ course.subject.code }}">
-                    <div class="collapsible_course">
-                        <div class="course_display">
-                            <button class="add_course">+</button>
-                            <span class="course_code">{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
-                            <span class="course_title">{{ course.title }}</span>
-                            <span class="course_credits">{{ course.credits }} cr.</span>
+        <div id="course_selection" class="tab_content">
+            <div id="filter_sidebar">
+                <form action="{% url 'course_list:load_course_selection_forms' %}"
+                      method="post">
+                    {% csrf_token %}
+                    <input type="submit" value="Filter">
+                    <div class="hidden">{{ student_form.as_p }}</div>
+                    <div id="course_search">{{ course_search_form.as_p }}</div>
+                </form>
+                <div id="course_filters">{{ course_filter_form.as_p }}</div>
+            </div>
+            <div id="course_list">
+                {% for course in courses %}
+                    <div class="course_information"
+                         data-code_level="{{ course.code_level }}"
+                         data-credits="{{ course.credits }}"
+                         data-school="{{ course.school.code }}"
+                         data-subject="{{ course.subject.code }}">
+                        <div class="collapsible">
+                            <div class="course_display">
+                                <button class="add_course">+</button>
+                                <span class="course_code">{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
+                                <span class="course_title">{{ course.title }}</span>
+                                <span class="course_credits">{{ course.credits }} cr.</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="course_content">
-                        <div class="cores_list">
-                            Cores
-                            {% for core in course.cores.all %}
-                                <span class="core_information" data-core_code="{{ core.code }}">
-                                    {{ core.description }} ({{ core.code }})
-                                    {% if not forloop.last %},{% endif %}
-                                </span>
-                            {% endfor %}
-                        </div>
+                        <div class="course_content">
+                            <div class="cores_list">
+                                Cores
+                                {% for core in course.cores.all %}
+                                    <span class="core_information" data-core_code="{{ core.code }}">
+                                        {{ core.description }} ({{ core.code }})
+                                        {% if not forloop.last %},{% endif %}
+                                    </span>
+                                {% endfor %}
+                            </div>
 
-                        <table class="section_list">
-                            <tr>
-                                <th>Sec</th>
-                                <th>Status</th>
-                                <th>Index</th>
-                                <th>Meeting Times/Locations</th>
-                                <th>Exam Code</th>
-                                <th>Instructor</th>
-                            </tr>
-                            {% for section in course.section_set.all %}
-                                <tr class="section_information"
-                                    data-open_status="{{ section.open_status }}">
-                                    <td>{{ section.number }}</td>
-                                    <td>{{ section.open_status }}</td>
-                                    <td>{{ section.index }}</td>
-                                    <td>
-                                        <table class="section_class_list">
-                                            {% for section_class in section.sectionclass_set.all %}
-                                                <tr class="section_class_information"
-                                                    data-campus="{{ section_class.campus_title }}">
-                                                    <td>{{ section_class.day }}</td>
-                                                    <td>{{ section_class.start_time }}-{{ section_class.end_time }}</td>
-                                                    <td>{{ section_class.building }}-{{ section_class.room }}</td>
-                                                    <td>{{ section_class.campus_title }}</td>
-                                                </tr>
-                                            {% endfor %}
-                                        </table>
-                                    </td>
-                                    <td>{{ section.exam_code }}</td>
-                                    <td>{{ section.instructor }}</td>
+                            <table class="section_list">
+                                <tr>
+                                    <th>Sec</th>
+                                    <th>Status</th>
+                                    <th>Index</th>
+                                    <th>Meeting Times/Locations</th>
+                                    <th>Exam Code</th>
+                                    <th>Instructor</th>
                                 </tr>
-                            {% endfor %}
-                        </table>
+                                {% for section in course.section_set.all %}
+                                    <tr class="section_information"
+                                        data-open_status="{{ section.open_status }}">
+                                        <td>{{ section.number }}</td>
+                                        <td>{{ section.open_status }}</td>
+                                        <td>{{ section.index }}</td>
+                                        <td>
+                                            <table class="section_class_list">
+                                                {% for section_class in section.sectionclass_set.all %}
+                                                    <tr class="section_class_information"
+                                                        data-campus="{{ section_class.campus_title }}">
+                                                        <td>{{ section_class.day }}</td>
+                                                        <td>{{ section_class.start_time }}-{{ section_class.end_time }}</td>
+                                                        <td>{{ section_class.building }}-{{ section_class.room }}</td>
+                                                        <td>{{ section_class.campus_title }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        </td>
+                                        <td>{{ section.exam_code }}</td>
+                                        <td>{{ section.instructor }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+        <div id="section_selection" class="tab_content">
+            hello
         </div>
     </div>
-    <script src="{% static 'course_list/collapsible_course.js' %}"></script>
+    <script src="{% static 'course_list/cookies.js' %}"></script>
+    <script src="{% static 'course_list/collapsible.js' %}"></script>
     <script src="{% static 'course_list/course_filters.js' %}"></script>
+    <script src="{% static 'course_list/tablist.js' %}"></script>
 </body>

@@ -20,10 +20,10 @@ function filter_courses() {
     const sections = Array.from(document.querySelectorAll(".section_information"));
 
     courses.forEach(element => {
-        element.style.display = "block"
+        element.style.display = ""
     })
     sections.forEach(element => {
-        element.style.display = "table-row"
+        element.style.display = ""
     })
 
     var filters = {};

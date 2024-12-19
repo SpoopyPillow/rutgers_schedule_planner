@@ -6,7 +6,7 @@
     display: none;
 }
 
-#content {
+#course_selection {
     display: flex;
     flex-direction: row;
 }
@@ -19,7 +19,7 @@
     flex: 3;
 }
 
-.collapsible_course {
+.collapsible {
     background-color: #777;
     cursor: pointer;
     padding: 10px;
@@ -39,7 +39,7 @@
 }
 
 .active_collapsible,
-.collapsible_course:hover {
+.collapsible:hover {
     background-color: #555;
 }
 

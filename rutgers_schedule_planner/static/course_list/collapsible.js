@@ -1,4 +1,4 @@
-document.querySelectorAll(".collapsible_course").forEach((element) => {
+document.querySelectorAll(".collapsible").forEach((element) => {
     element.addEventListener("click", function (event) {
         if (event.target.tagName === "BUTTON") {
             return;
