@@ -6,6 +6,7 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonRespons
 from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
+from django.core import serializers
 
 from .models import School, Subject, Core, Course, Comment, Section, SectionClass
 from .forms import StudentRelatedForm, CourseSearchForm, CourseFilterForm
@@ -23,7 +24,7 @@ def load_schedule_planner_forms(request):
         return HttpResponse("invalid")
     student = student_form.cleaned_data
     course_search = course_search_form.cleaned_data
-    
+
     request.session["student_related"] = student
     request.session["course_search"] = course_search
     return HttpResponseRedirect(reverse("course_list:schedule_planner"))
@@ -32,10 +33,10 @@ def load_schedule_planner_forms(request):
 def schedule_planner(request):
     if not request.method == "GET":
         raise Http404
-    
+
     student = request.session["student_related"]
     search = request.session["course_search"]
-    
+
     student_form = StudentRelatedForm(initial=student)
     course_search_form = CourseSearchForm(initial=search)
 
@@ -64,6 +65,28 @@ def schedule_planner(request):
             "courses": courses,
         },
     )
+
+
+def remove_course(request):
+    request.session["selected_courses"] = []
+    return JsonResponse({"selected_courses": request.session["selected_courses"]})
+
+
+def select_course(request):
+    course_data = json.loads(request.body.decode("utf-8"))
+    course = Course.objects.get(
+        school__code=course_data["school"],
+        subject__code=course_data["subject"],
+        code=course_data["code"],
+        supplement_code=course_data["supplement_code"],
+        campus_code=course_data["campus_code"],
+    )
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
+    request.session["selected_courses"] += [json.dumps(serializers.serialize("python", [course])[0])]
+    request.session["selected_courses"] = list(set(request.session["selected_courses"]))
+
+    return JsonResponse({"selected_courses": request.session["selected_courses"]})
 
 
 def update_db(request):

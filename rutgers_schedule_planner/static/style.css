@@ -6,6 +6,10 @@
     display: none;
 }
 
+.tab_content:not(.active_content) {
+    display: none !important;
+}
+
 #course_selection {
     display: flex;
     flex-direction: row;

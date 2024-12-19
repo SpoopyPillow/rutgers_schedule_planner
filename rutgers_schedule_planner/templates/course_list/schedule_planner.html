@@ -11,7 +11,7 @@
         <div id="tab-section_selection" class="tab_link">Select Sections</div>
     </div>
     <div id="content">
-        <div id="course_selection" class="tab_content">
+        <div id="course_selection" class="tab_content active_content">
             <div id="filter_sidebar">
                 <form action="{% url 'course_list:load_schedule_planner_forms' %}"
                       method="post">
@@ -20,6 +20,12 @@
                     <div class="hidden">{{ student_form.as_p }}</div>
                     <div id="course_search">{{ course_search_form.as_p }}</div>
                 </form>
+                <button class="remove_course">
+                    Remove courses
+                </button>
+                <div id="selected_courses">
+                    {% for course in request.session.selected_courses %}{{ course }}{% endfor %}
+                </div>
                 <div id="course_filters">{{ course_filter_form.as_p }}</div>
             </div>
             <div id="course_list">
@@ -31,7 +37,12 @@
                          data-subject="{{ course.subject.code }}">
                         <div class="collapsible">
                             <div class="course_display">
-                                <button class="add_course">+</button>
+                                <button class="select_course"
+                                        data-school="{{ course.school.code }}"
+                                        data-subject="{{ course.subject.code }}"
+                                        data-code="{{ course.code }}"
+                                        data-supplement_code="{{ course.supplement_code }}"
+                                        data-campus_code="{{ course.campus_code }}">+</button>
                                 <span class="course_code">{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
                                 <span class="course_title">{{ course.title }}</span>
                                 <span class="course_credits">{{ course.credits }} cr.</span>
@@ -86,12 +97,11 @@
                 {% endfor %}
             </div>
         </div>
-        <div id="section_selection" class="tab_content">
-            hello
-        </div>
+        <div id="section_selection" class="tab_content">hello</div>
     </div>
     <script src="{% static 'course_list/cookies.js' %}"></script>
     <script src="{% static 'course_list/collapsible.js' %}"></script>
     <script src="{% static 'course_list/course_filters.js' %}"></script>
     <script src="{% static 'course_list/tablist.js' %}"></script>
+    <script src="{% static 'course_list/user_courses.js' %}"></script>
 </body>

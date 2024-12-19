@@ -103,6 +103,11 @@ class Course(models.Model):
     synopsis_url = models.CharField(max_length=255)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["school", "subject", "code", "supplement_code", "campus_code"], name="unique_course"
+            )
+        ]
         indexes = [models.Index(fields=["school", "subject", "code"])]
 
     def __str___(self):
@@ -140,7 +145,7 @@ class Section(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
         indexes = [models.Index(fields=["index"])]
-    
+
     # TODO add method to get sectionclass campuses
 
 
