@@ -1,4 +1,6 @@
 function select_course() {
+    let container = document.getElementById("selected_courses");
+
     const course_data = {
         "school": this.getAttribute("data-school"),
         "subject": this.getAttribute("data-subject"),
@@ -15,7 +17,19 @@ function select_course() {
         "body": JSON.stringify(course_data),
     })
         .then(response => response.json())
-        .then(data => console.log(data))
+        .then(data => {
+            if (!("selected_course" in data)) {
+                return;
+            }
+            course = data["selected_course"]
+            let div = document.createElement("div");
+            let code = document.createElement("span");
+            div.appendChild(code);
+
+            code.textContent = course["school"] + ":" + course["subject"] + ":" + course["code"];
+
+            container.appendChild(div);
+        });
 }
 
 function remove_course() {

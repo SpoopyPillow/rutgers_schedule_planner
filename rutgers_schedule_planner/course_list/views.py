@@ -83,10 +83,16 @@ def select_course(request):
     )
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
-    request.session["selected_courses"] += [json.dumps(serializers.serialize("python", [course])[0])]
-    request.session["selected_courses"] = list(set(request.session["selected_courses"]))
 
-    return JsonResponse({"selected_courses": request.session["selected_courses"]})
+    serialized_course = json.dumps(serializers.serialize("python", [course])[0])
+    if serialized_course in request.session["selected_courses"]:
+        return JsonResponse({})
+    request.session["selected_courses"] += [serialized_course]
+
+    return JsonResponse({"selected_course": course_data})
+
+
+########################################## UPDATING #####################################################
 
 
 def update_db(request):
