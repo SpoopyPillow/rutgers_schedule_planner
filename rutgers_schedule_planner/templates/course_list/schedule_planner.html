@@ -13,24 +13,20 @@
     <div id="content">
         <div id="course_selection" class="tab_content active_content">
             <div id="filter_sidebar">
-                <form action="{% url 'course_list:load_schedule_planner_forms' %}"
-                      method="post">
-                    {% csrf_token %}
-                    <input type="submit" value="Filter">
-                    <div class="hidden">{{ student_form.as_p }}</div>
-                    <div id="course_search">{{ course_search_form.as_p }}</div>
-                </form>
-                <button class="remove_course">
-                    Remove courses
-                </button>
+                <div id="test_display_courses">
+                    test display courses
+                </div>
+                <form id="student_form" class="hidden">{{ student_form.as_p }}</form>
+                <form id="course_search_form">{{ course_search_form.as_p }}</form>
+                <form id="course_filter_form">{{ course_filter_form.as_p }}</form>
+                <button class="remove_course">Remove courses</button>
                 <div id="selected_courses">
                     {% for course in request.session.selected_courses %}
-                    <div>
-                        <span>{{ course }}</span>
-                    </div>
+                        <div>
+                            <span>{{ course }}</span>
+                        </div>
                     {% endfor %}
                 </div>
-                <div id="course_filters">{{ course_filter_form.as_p }}</div>
             </div>
             <div id="course_list">
                 {% for course in courses %}
@@ -104,6 +100,7 @@
         <div id="section_selection" class="tab_content">hello</div>
     </div>
     <script src="{% static 'course_list/cookies.js' %}"></script>
+    <script src="{% static 'course_list/display_courses.js' %}"></script>
     <script src="{% static 'course_list/collapsible.js' %}"></script>
     <script src="{% static 'course_list/course_filters.js' %}"></script>
     <script src="{% static 'course_list/tablist.js' %}"></script>

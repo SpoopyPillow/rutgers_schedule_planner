@@ -16,6 +16,20 @@ def student_related(request):
     return render(request, "course_list/student_related.html", {"form": StudentRelatedForm})
 
 
+def display_courses(request):
+    forms = json.loads(request.body.decode("utf-8"))
+    print(forms["student_form"])
+    student_form = StudentRelatedForm({"term": "1", "locations": "nb", "levels": "U"})
+    # student_form = StudentRelatedForm(forms["student_form"])
+    course_search_form = CourseSearchForm(forms["course_search_form"])
+    course_filter_form = CourseFilterForm(forms["course_filter_form"])
+
+    if not student_form.is_valid():
+        return JsonResponse({"invalid": "invalid"})
+    
+    return JsonResponse({"A": "B"})
+
+
 def load_schedule_planner_forms(request):
     student_form = StudentRelatedForm(request.POST)
     course_search_form = CourseSearchForm(request.POST)

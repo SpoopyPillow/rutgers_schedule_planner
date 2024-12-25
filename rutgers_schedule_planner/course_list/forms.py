@@ -16,11 +16,11 @@ class StudentRelatedForm(forms.Form):
         widget=forms.CheckboxSelectMultiple, choices=location_choices, required=True
     )
 
-    level_choices = [
-        ("U", "Undergraduate"),
-        ("G", "Graduate"),
-    ]
-    levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
+    # level_choices = [
+    #     ("U", "Undergraduate"),
+    #     ("G", "Graduate"),
+    # ]
+    # levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
 
 
 class CourseSearchForm(forms.Form):
@@ -51,14 +51,18 @@ class CourseFilterForm(forms.Form):
     core = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
+        if "courses" not in kwargs:
+            super(CourseFilterForm, self).__init__(*args, **kwargs)
+            return
+
         courses = kwargs.pop("courses")
         super(CourseFilterForm, self).__init__(*args, **kwargs)
-        
+
         choices = {field: set() for field in self.fields.keys()}
-        
+
         choices["open_status"].add((True, "Open"))
         choices["open_status"].add((False, "Closed"))
-        
+
         for course in courses:
             choices["code_level"].add((course.code_level(), course.code_level()))
             choices["credits"].add((course.credits, course.credits))
@@ -75,7 +79,7 @@ class CourseFilterForm(forms.Form):
             for section in course.section_set.all():
                 for section_class in section.sectionclass_set.all():
                     choices["campus"].add((section_class.campus_title, section_class.campus_title))
-                    
+
         for field, choices in choices.items():
             choices = list(choices)
             self.fields[field].choices = sorted(choices)
