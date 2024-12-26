@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<template id="template_course_information">
+    <div class="course_information">
+        <div class="course_display collapsible">
+            <button class="select_course">+</button>
+            <span class="course_code"></span>
+            <span class="course_title"></span>
+            <span class="course_credits"></span>
+        </div>
+        <div class="course_content">
+            <div class="cores_list"></div>
+
+            <table class="section_list">
+                <tr>
+                    <th>Sec</th>
+                    <th>Status</th>
+                    <th>Index</th>
+                    <th>Meeting Times/Locations</th>
+                    <th>Exam Code</th>
+                    <th>Instructor</th>
+                </tr>
+                <!-- SECTION INFORMATION TEMPLATE -->
+            </table>
+        </div>
+    </div>
+</template>
+
+<template id="template_section_information">
+    <tr class="section_information">
+        <td class="section_number"></td>
+        <td class="section_open_status"></td>
+        <td class="section_index"></td>
+        <td>
+            <table class="section_class_list">
+                <!-- SECTION CLASS INFORMATION TEMPLATE -->
+            </table>
+        </td>
+        <td class="section_exam_code"></td>
+        <td class="section_instructor"></td>
+    </tr>
+</template>
+
+<template id="template_section_class_information">
+    <tr class="section_class_information"
+        data-campus="{{ section_class.campus_title }}">
+        <td class="section_class_day">{{ section_class.day }}</td>
+        <td class="section_class_times">{{ section_class.start_time }}-{{ section_class.end_time }}</td>
+        <td class="section_class_location">{{ section_class.building }}-{{ section_class.room }}</td>
+        <td class="section_class_campus_title">{{ section_class.campus_title }}</td>
+    </tr>
+</template>

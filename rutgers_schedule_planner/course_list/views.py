@@ -22,15 +22,13 @@ def student_related(request):
 def course_lookup(request):
     forms = json.loads(request.body.decode("utf-8"))
 
-    student_form = StudentRelatedForm(dict_to_querydict(forms["student_form"]))
     course_search_form = CourseSearchForm(dict_to_querydict(forms["course_search_form"]))
 
-    if not student_form.is_valid() or not course_search_form.is_valid():
+    if not course_search_form.is_valid():
         return JsonResponse({"invalid": "invalid"})
-    student = student_form.cleaned_data
     course_search = course_search_form.cleaned_data
+    student = request.session["student_related"]
 
-    request.session["student_related"] = student
     request.session["course_search"] = course_search
 
     filters = {"level__in": student["levels"]}
@@ -68,17 +66,13 @@ def schedule_planner(request):
     if not request.method == "GET":
         raise Http404
 
-    student = request.session["student_related"]
     search = request.session["course_search"]
-
-    student_form = StudentRelatedForm(initial=student)
     course_search_form = CourseSearchForm(initial=search)
 
     return render(
         request,
         "course_list/schedule_planner.html",
         {
-            "student_form": student_form,
             "course_search_form": course_search_form,
         },
     )

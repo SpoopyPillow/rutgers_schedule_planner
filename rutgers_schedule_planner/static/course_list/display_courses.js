@@ -10,7 +10,6 @@ function display_courses() {
     }
 
     const form_data = {
-        "student_form": form_json("student_form"),
         "course_search_form": form_json("course_search_form"),
     }
 
@@ -34,7 +33,7 @@ function display_courses() {
                 course_information.querySelector(".select_course").addEventListener("click", function () {
                     select_course(course);
                 })
-                course_information.querySelector(".course_code").textContent = course["code"];
+                course_information.querySelector(".course_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
                 course_information.querySelector(".course_title").textContent = course["title"];
                 course_information.querySelector(".course_credits").textContent = course["credits"];
 
