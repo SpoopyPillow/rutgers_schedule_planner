@@ -29,7 +29,10 @@ def course_lookup(request):
         return JsonResponse({"invalid": "invalid"})
     student = student_form.cleaned_data
     course_search = course_search_form.cleaned_data
-    
+
+    request.session["student_related"] = student
+    request.session["course_search"] = course_search
+
     filters = {"level__in": student["levels"]}
 
     if course_search["school"] is not None:
@@ -71,33 +74,14 @@ def schedule_planner(request):
     student_form = StudentRelatedForm(initial=student)
     course_search_form = CourseSearchForm(initial=search)
 
-    filters = {"level__in": student["levels"]}
-
-    if search["school"] is not None:
-        filters["school__code"] = search["school"]
-    if search["subject"] is not None:
-        filters["subject__code"] = search["subject"]
-    if search["core"] != "":
-        filters["cores__code"] = search["core"]
-
-    courses = Course.objects.none()
-    if any(search.values()):
-        courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
-
     return render(
         request,
         "course_list/schedule_planner.html",
         {
             "student_form": student_form,
             "course_search_form": course_search_form,
-            "courses": courses,
         },
     )
-
-
-def remove_course(request):
-    request.session["selected_courses"] = []
-    return JsonResponse({"selected_courses": request.session["selected_courses"]})
 
 
 def select_course(request):
@@ -109,15 +93,21 @@ def select_course(request):
         supplement_code=course_data["supplement_code"],
         campus_code=course_data["campus_code"],
     )
+
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
 
-    serialized_course = json.dumps(serializers.serialize("python", [course])[0])
-    if serialized_course in request.session["selected_courses"]:
+    serialized_course = CourseSerializer(course)
+    if serialized_course.data in request.session["selected_courses"]:
         return JsonResponse({})
-    request.session["selected_courses"] += [serialized_course]
+    request.session["selected_courses"] += [serialized_course.data]
 
-    return JsonResponse({"selected_course": course_data})
+    return JsonResponse({"selected_course": serialized_course.data})
+
+
+def remove_course(request):
+    request.session["selected_courses"] = []
+    return JsonResponse({"selected_courses": request.session["selected_courses"]})
 
 
 ########################################## UPDATING #####################################################

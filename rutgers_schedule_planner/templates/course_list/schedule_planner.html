@@ -24,7 +24,7 @@
                 <div id="selected_courses">
                     {% for course in request.session.selected_courses %}
                         <div>
-                            <span>{{ course }}</span>
+                            <span>{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -78,7 +78,8 @@
     </template>
 
     <template id="template_section_class_information">
-        <tr class="section_class_information" data-campus="{{ section_class.campus_title }}">
+        <tr class="section_class_information"
+            data-campus="{{ section_class.campus_title }}">
             <td class="section_class_day">{{ section_class.day }}</td>
             <td class="section_class_times">{{ section_class.start_time }}-{{ section_class.end_time }}</td>
             <td class="section_class_location">{{ section_class.building }}-{{ section_class.room }}</td>

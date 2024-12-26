@@ -26,7 +26,7 @@ function select_course(course_data) {
             let code = document.createElement("span");
             div.appendChild(code);
 
-            code.textContent = course["school"] + ":" + course["subject"] + ":" + course["code"];
+            code.textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
 
             container.appendChild(div);
         });
