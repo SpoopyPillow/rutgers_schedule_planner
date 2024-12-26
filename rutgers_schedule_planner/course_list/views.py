@@ -3,31 +3,48 @@ import json
 
 from django.shortcuts import render
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http.request import QueryDict
 from django.urls import reverse
 from django.db import transaction
 from django.utils.dateparse import parse_time
 from django.core import serializers
 
 from .models import School, Subject, Core, Course, Comment, Section, SectionClass
-from .forms import StudentRelatedForm, CourseSearchForm, CourseFilterForm
+from .forms import StudentRelatedForm, CourseSearchForm
+from .serializers import CourseSerializer
+from .utils import dict_to_querydict
 
 
 def student_related(request):
     return render(request, "course_list/student_related.html", {"form": StudentRelatedForm})
 
 
-def display_courses(request):
+def course_lookup(request):
     forms = json.loads(request.body.decode("utf-8"))
-    print(forms["student_form"])
-    student_form = StudentRelatedForm({"term": "1", "locations": "nb", "levels": "U"})
-    # student_form = StudentRelatedForm(forms["student_form"])
-    course_search_form = CourseSearchForm(forms["course_search_form"])
-    course_filter_form = CourseFilterForm(forms["course_filter_form"])
 
-    if not student_form.is_valid():
+    student_form = StudentRelatedForm(dict_to_querydict(forms["student_form"]))
+    course_search_form = CourseSearchForm(dict_to_querydict(forms["course_search_form"]))
+
+    if not student_form.is_valid() or not course_search_form.is_valid():
         return JsonResponse({"invalid": "invalid"})
+    student = student_form.cleaned_data
+    course_search = course_search_form.cleaned_data
     
-    return JsonResponse({"A": "B"})
+    filters = {"level__in": student["levels"]}
+
+    if course_search["school"] is not None:
+        filters["school__code"] = course_search["school"]
+    if course_search["subject"] is not None:
+        filters["subject__code"] = course_search["subject"]
+    if course_search["core"] != "":
+        filters["cores__code"] = course_search["core"]
+
+    courses = Course.objects.none()
+    if any(course_search.values()):
+        courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
+
+    serializer = CourseSerializer(courses, many=True)
+    return JsonResponse({"courses": serializer.data})
 
 
 def load_schedule_planner_forms(request):
@@ -67,15 +84,12 @@ def schedule_planner(request):
     if any(search.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
-    course_filter_form = CourseFilterForm(courses=courses)
-
     return render(
         request,
         "course_list/schedule_planner.html",
         {
             "student_form": student_form,
             "course_search_form": course_search_form,
-            "course_filter_form": course_filter_form,
             "courses": courses,
         },
     )

@@ -16,11 +16,11 @@ class StudentRelatedForm(forms.Form):
         widget=forms.CheckboxSelectMultiple, choices=location_choices, required=True
     )
 
-    # level_choices = [
-    #     ("U", "Undergraduate"),
-    #     ("G", "Graduate"),
-    # ]
-    # levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
+    level_choices = [
+        ("U", "Undergraduate"),
+        ("G", "Graduate"),
+    ]
+    levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
 
 
 class CourseSearchForm(forms.Form):
@@ -41,7 +41,7 @@ class CourseSearchForm(forms.Form):
     core = forms.CharField(widget=forms.Select(choices=core_choices), max_length=255, required=False)
 
 
-class CourseFilterForm(forms.Form):
+class SectionFilterForm(forms.Form):
     open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
@@ -52,11 +52,11 @@ class CourseFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         if "courses" not in kwargs:
-            super(CourseFilterForm, self).__init__(*args, **kwargs)
+            super(SectionFilterForm, self).__init__(*args, **kwargs)
             return
 
         courses = kwargs.pop("courses")
-        super(CourseFilterForm, self).__init__(*args, **kwargs)
+        super(SectionFilterForm, self).__init__(*args, **kwargs)
 
         choices = {field: set() for field in self.fields.keys()}
 

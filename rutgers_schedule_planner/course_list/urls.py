@@ -5,7 +5,7 @@ from . import views
 app_name = "course_list"
 urlpatterns = [
     path("", views.student_related, name="student_related"),
-    path("display_courses", views.display_courses, name="display_courses"),
+    path("course_lookup", views.course_lookup, name="course_lookup"),
     path("load_schedule_planner_forms", views.load_schedule_planner_forms, name="load_schedule_planner_forms"),
     path("schedule_planner", views.schedule_planner, name="schedule_planner"),
     path("select_course", views.select_course, name="select_course"),

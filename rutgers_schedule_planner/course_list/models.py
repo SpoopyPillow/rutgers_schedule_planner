@@ -146,8 +146,6 @@ class Section(models.Model):
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
         indexes = [models.Index(fields=["index"])]
 
-    # TODO add method to get sectionclass campuses
-
 
 class SectionClass(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
