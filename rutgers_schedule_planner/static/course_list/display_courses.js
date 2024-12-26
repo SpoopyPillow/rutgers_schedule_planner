@@ -23,7 +23,6 @@ function display_courses() {
     })
         .then(response => response.json())
         .then(data => {
-            const container = document.createDocumentFragment();
             const template_course_information = document.getElementById("template_course_information");
             const template_section_information = document.getElementById("template_section_information");
             const template_section_class_information = document.getElementById("template_section_class_information");
@@ -32,6 +31,9 @@ function display_courses() {
                 console.log(course);
                 let course_information = template_course_information.content.cloneNode(true);
 
+                course_information.querySelector(".select_course").addEventListener("click", function () {
+                    select_course(course);
+                })
                 course_information.querySelector(".course_code").textContent = course["code"];
                 course_information.querySelector(".course_title").textContent = course["title"];
                 course_information.querySelector(".course_credits").textContent = course["credits"];
@@ -39,9 +41,9 @@ function display_courses() {
                 let cores_list = course_information.querySelector(".cores_list");
                 cores_list.textContent = "Cores: ";
                 for (let i = 0; i < course["cores"].length; i++) {
-                    core = course["cores"][i];
+                    let core = course["cores"][i];
 
-                    core_information = document.createElement("span");
+                    let core_information = document.createElement("span");
                     core_information.className = "core_information";
                     core_information.textContent = core["description"] + " (" + core["code"] + ")";
                     if (i < course["cores"].length - 1) {
@@ -76,13 +78,10 @@ function display_courses() {
                     section_list.appendChild(section_information);
                 }
 
-                container.appendChild(course_information);
+                course_list.appendChild(course_information);
             }
 
-            course_list.appendChild(container);
-            // TODO do it here
             initalize_collapsible();
-            // initialize_select_course();
         });
 }
 
