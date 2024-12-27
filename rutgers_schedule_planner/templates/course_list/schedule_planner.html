@@ -40,7 +40,7 @@
             </div>
         </div>
     </div>
-
+    <!-- ----------------------------------- TEMPLATES ----------------------------------- -->
     <template id="template_course_information">
         <div class="course_information">
             <div class="course_display collapsible">
@@ -91,6 +91,12 @@
             <td class="section_class_campus_title">{{ section_class.campus_title }}</td>
         </tr>
     </template>
+
+    <script>
+        const template_course_information = document.getElementById("template_course_information");
+        const template_section_information = document.getElementById("template_section_information");
+        const template_section_class_information = document.getElementById("template_section_class_information");
+    </script>
 
     <script src="{% static 'course_list/cookies.js' %}"></script>
     <script src="{% static 'course_list/course_selection.js' %}"></script>
