@@ -80,13 +80,7 @@ def schedule_planner(request):
 
 def select_course(request):
     course_data = json.loads(request.body.decode("utf-8"))
-    course = Course.objects.get(
-        school__code=course_data["school"],
-        subject__code=course_data["subject"],
-        code=course_data["code"],
-        supplement_code=course_data["supplement_code"],
-        campus_code=course_data["campus_code"],
-    )
+    course = Course.objects.get(id=course_data["id"])
 
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
@@ -104,14 +98,20 @@ def remove_course(request):
     return JsonResponse({"selected_courses": request.session["selected_courses"]})
 
 
-def update_section_selection(request):
+def get_selected_courses(request):
     if "selected_courses" not in request.session:
-        return JsonResponse({})
+        request.session["selected_courses"] = []
+    return JsonResponse({"selected_courses": request.session["selected_courses"]})
+
+
+def get_section_filters(request):
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
     courses_json = request.session["selected_courses"]
     courses = [Course.objects.get(id=data["id"]) for data in courses_json]
 
     form = SectionFilterForm(courses=courses)
-    return JsonResponse({"selected_courses": courses_json, "section_filter_form": form.as_p()})
+    return JsonResponse({"section_filter_form": form.as_p()})
 
 
 ########################################## UPDATING #####################################################

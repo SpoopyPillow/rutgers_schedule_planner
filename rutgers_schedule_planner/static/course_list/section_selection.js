@@ -1,18 +1,56 @@
-function select_course(course_data) {
-    const request_data = {
-        "school": course_data["school"]["code"],
-        "subject": course_data["subject"]["code"],
-        "code": course_data["code"],
-        "supplement_code": course_data["supplement_code"],
-        "campus_code": course_data["campus_code"]
-    }
+function load_section_filters() {
+    fetch("get_section_filters", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const form = data["section_filter_form"];
 
+            const container = document.getElementById("section_filters");
+            while (container.firstChild) {
+                container.removeChild(container.lastChild);
+            }
+
+            container.innerHTML = form;
+        })
+}
+
+function load_selected_course(course) {
+    const container = document.getElementById("section_list");
+
+    course_information = create_course_information(course)
+    container.appendChild(course_information);
+
+    initalize_collapsible();
+}
+
+function initialize_section_selection() {
+    fetch("get_selected_courses", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+    })
+        .then(response => response.json())
+        .then(data => {
+            const courses = data["selected_courses"];
+            load_section_filters();
+            for (const course of courses) {
+                load_selected_course(course);
+            }
+        })
+}
+
+function select_course(course_data) {
     fetch("select_course", {
         "method": "POST",
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify(request_data),
+        "body": JSON.stringify(course_data),
     })
         .then(response => response.json())
         .then(data => {
@@ -30,7 +68,8 @@ function select_course(course_data) {
 
             container.appendChild(div);
 
-            update_section_selection();
+            load_section_filters();
+            load_selected_course(course);
         });
 }
 
@@ -48,7 +87,8 @@ function remove_course() {
                 container.removeChild(container.lastChild);
             }
 
-            update_section_selection();
+            load_section_filters();
+            load_selected_course(course);
         })
 }
 
@@ -58,41 +98,5 @@ function initialize_remove_course() {
     })
 }
 
-function update_section_filters(form) {
-    const container = document.getElementById("section_filters");
-    while (container.firstChild) {
-        container.removeChild(container.lastChild);
-    }
-
-    container.innerHTML = form;
-}
-
-function display_sections(courses) {
-    const container = document.getElementById("section_list");
-    while (container.firstChild) {
-        container.removeChild(container.lastChild);
-    }
-}
-
-function update_section_selection() {
-    fetch("update_section_selection", {
-        "method": "POST",
-        "headers": {
-            "X-CSRFToken": getCookie("csrftoken"),
-        },
-        "body": JSON.stringify(),
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!("selected_courses" in data)) {
-                return;
-            }
-            const courses = data["selected_courses"];
-            const form = data["section_filter_form"];
-
-            update_section_filters(form);
-        });
-}
-
 initialize_remove_course();
-update_section_selection();
+initialize_section_selection();

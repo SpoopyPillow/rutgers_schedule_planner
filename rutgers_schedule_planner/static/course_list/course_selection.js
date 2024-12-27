@@ -34,9 +34,9 @@ function create_section_information(section) {
 function create_course_information(course) {
     let course_information = template_course_information.content.cloneNode(true);
 
-    course_information.querySelector(".select_course").addEventListener("click", function () {
+    course_information.querySelector(".select_course").onclick = function () {
         select_course(course);
-    })
+    }
     course_information.querySelector(".course_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
     course_information.querySelector(".course_title").textContent = course["title"];
     course_information.querySelector(".course_credits").textContent = course["credits"];
@@ -63,7 +63,7 @@ function create_course_information(course) {
     return course_information;
 }
 
-function display_courses() {
+function load_courses() {
     const form_data = {
         "course_search_form": form_json("course_search_form"),
     }
@@ -77,18 +77,18 @@ function display_courses() {
     })
         .then(response => response.json())
         .then(data => {
-            const course_list = document.getElementById("course_list");
-            while (course_list.firstChild) {
-                course_list.removeChild(course_list.lastChild);
+            const container = document.getElementById("course_list");
+            while (container.firstChild) {
+                container.removeChild(container.lastChild);
             }
 
             for (const course of data["courses"]) {
-                course_list.appendChild(create_course_information(course));
+                container.appendChild(create_course_information(course));
             }
 
             initalize_collapsible();
         });
 }
 
-document.getElementById("test_display_courses").addEventListener("click", display_courses);
-display_courses()
+document.getElementById("test_display_courses").addEventListener("click", load_courses);
+load_courses()
