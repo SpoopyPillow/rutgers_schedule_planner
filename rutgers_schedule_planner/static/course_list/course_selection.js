@@ -4,11 +4,6 @@ function form_json(id) {
 }
 
 function display_courses() {
-    const course_list = document.getElementById("course_list");
-    while (course_list.firstChild) {
-        course_list.removeChild(course_list.lastChild);
-    }
-
     const form_data = {
         "course_search_form": form_json("course_search_form"),
     }
@@ -22,12 +17,16 @@ function display_courses() {
     })
         .then(response => response.json())
         .then(data => {
+            const course_list = document.getElementById("course_list");
+            while (course_list.firstChild) {
+                course_list.removeChild(course_list.lastChild);
+            }
+
             const template_course_information = document.getElementById("template_course_information");
             const template_section_information = document.getElementById("template_section_information");
             const template_section_class_information = document.getElementById("template_section_class_information");
 
             for (const course of data["courses"]) {
-                console.log(course);
                 let course_information = template_course_information.content.cloneNode(true);
 
                 course_information.querySelector(".select_course").addEventListener("click", function () {
@@ -84,5 +83,66 @@ function display_courses() {
         });
 }
 
+function select_course(course_data) {
+    const request_data = {
+        "school": course_data["school"]["code"],
+        "subject": course_data["subject"]["code"],
+        "code": course_data["code"],
+        "supplement_code": course_data["supplement_code"],
+        "campus_code": course_data["campus_code"]
+    }
+
+    fetch("select_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify(request_data),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!("selected_course" in data)) {
+                return;
+            }
+            course = data["selected_course"]
+
+            const container = document.getElementById("selected_courses");
+            let div = document.createElement("div");
+            let code = document.createElement("span");
+            div.appendChild(code);
+
+            code.textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
+
+            container.appendChild(div);
+
+            update_section_selection();
+        });
+}
+
+function remove_course() {
+    fetch("remove_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify(),
+    })
+        .then(response => {
+            const container = document.getElementById("selected_courses");
+            while (container.firstChild) {
+                container.removeChild(container.lastChild);
+            }
+
+            update_section_selection();
+        })
+}
+
+function initialize_remove_course() {
+    document.querySelectorAll(".remove_course").forEach(button => {
+        button.onclick = remove_course;
+    })
+}
+
 document.getElementById("test_display_courses").addEventListener("click", display_courses);
 display_courses()
+initialize_remove_course();

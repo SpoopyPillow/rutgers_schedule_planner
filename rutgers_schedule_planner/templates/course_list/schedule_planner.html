@@ -31,7 +31,13 @@
             </div>
         </div>
         <div id="section_selection" class="tab_content">
-            <div class="filter_sidebar"></div>
+            <div class="filter_sidebar">
+                <form id="section_filters">
+                </form>
+            </div>
+            <div id="section_list">
+                <!-- COURSE INFORMATION TEMPLATE -->
+            </div>
         </div>
     </div>
 
@@ -87,8 +93,8 @@
     </template>
 
     <script src="{% static 'course_list/cookies.js' %}"></script>
-    <script src="{% static 'course_list/display_courses.js' %}"></script>
+    <script src="{% static 'course_list/course_selection.js' %}"></script>
     <script src="{% static 'course_list/collapsible.js' %}"></script>
     <script src="{% static 'course_list/tablist.js' %}"></script>
-    <script src="{% static 'course_list/user_courses.js' %}"></script>
+    <script src="{% static 'course_list/section_selection.js' %}"></script>
 </body>

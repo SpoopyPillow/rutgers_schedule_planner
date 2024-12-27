@@ -10,7 +10,7 @@ from django.utils.dateparse import parse_time
 from django.core import serializers
 
 from .models import School, Subject, Core, Course, Comment, Section, SectionClass
-from .forms import StudentRelatedForm, CourseSearchForm
+from .forms import StudentRelatedForm, CourseSearchForm, SectionFilterForm
 from .serializers import CourseSerializer
 from .utils import dict_to_querydict
 
@@ -102,6 +102,16 @@ def select_course(request):
 def remove_course(request):
     request.session["selected_courses"] = []
     return JsonResponse({"selected_courses": request.session["selected_courses"]})
+
+
+def update_section_selection(request):
+    if "selected_courses" not in request.session:
+        return JsonResponse({})
+    courses_json = request.session["selected_courses"]
+    courses = [Course.objects.get(id=data["id"]) for data in courses_json]
+
+    form = SectionFilterForm(courses=courses)
+    return JsonResponse({"selected_courses": courses_json, "section_filter_form": form.as_p()})
 
 
 ########################################## UPDATING #####################################################

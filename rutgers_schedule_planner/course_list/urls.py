@@ -6,6 +6,7 @@ app_name = "course_list"
 urlpatterns = [
     path("", views.student_related, name="student_related"),
     path("course_lookup", views.course_lookup, name="course_lookup"),
+    path("update_section_selection", views.update_section_selection, name="update_section_selection"),
     path("load_schedule_planner_forms", views.load_schedule_planner_forms, name="load_schedule_planner_forms"),
     path("schedule_planner", views.schedule_planner, name="schedule_planner"),
     path("select_course", views.select_course, name="select_course"),
