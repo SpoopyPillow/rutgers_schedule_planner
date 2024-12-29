@@ -36,6 +36,8 @@ function append_selected(course, target) {
 
     selected_list.appendChild(selected_information);
     section_list.appendChild(course_information);
+
+    initialize_collapsible();
 }
 
 function pop_selected(index) {

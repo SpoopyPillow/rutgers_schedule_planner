@@ -1,4 +1,4 @@
-function initalize_collapsible() {
+function initialize_collapsible() {
     document.querySelectorAll(".collapsible").forEach((element) => {
         element.onclick = function (event) {
             if (event.target.tagName === "BUTTON") {

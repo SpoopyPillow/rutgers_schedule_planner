@@ -113,6 +113,6 @@ function load_courses() {
                 container.appendChild(course_information);
             }
 
-            initalize_collapsible();
+            initialize_collapsible();
         });
 }
