@@ -5,7 +5,7 @@ function initalize_collapsible() {
                 return;
             }
             this.classList.toggle("active_collapsible");
-            this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block"
+            this.nextElementSibling.style.display = this.nextElementSibling.style.display === "block" ? "none" : "block";
         }
-    })
+    });
 }

@@ -4,7 +4,7 @@ function form_json(id) {
 }
 
 function create_section_class_information(section_class) {
-    let section_class_information = template_section_class_information.content.cloneNode(true);
+    const section_class_information = template_section_class_information.content.cloneNode(true);
 
     section_class_information.querySelector(".section_class_day").textContent = section_class["day"];
     section_class_information.querySelector(".section_class_times").textContent = section_class["start_time"] + "-" + section_class["end_time"];
@@ -15,7 +15,7 @@ function create_section_class_information(section_class) {
 }
 
 function create_section_information(section) {
-    let section_information = template_section_information.content.cloneNode(true);
+    const section_information = template_section_information.content.cloneNode(true);
 
     section_information.querySelector(".section_number").textContent = section["number"];
     section_information.querySelector(".section_open_status").textContent = section["open_status"];
@@ -23,7 +23,7 @@ function create_section_information(section) {
     section_information.querySelector(".section_exam_code").textContent = section["exam_code"];
     section_information.querySelector(".section_instructor").textContent = section["instructor"];
 
-    let section_class_list = section_information.querySelector(".section_class_list");
+    const section_class_list = section_information.querySelector(".section_class_list");
     for (const section_class of section["section_classes"]) {
         section_class_list.appendChild(create_section_class_information(section_class));
     }
@@ -32,16 +32,13 @@ function create_section_information(section) {
 }
 
 function create_course_information(course) {
-    let course_information = template_course_information.content.cloneNode(true);
+    const course_information = template_course_information.content.cloneNode(true);
 
-    course_information.querySelector(".select_course").onclick = function () {
-        select_course(course);
-    }
     course_information.querySelector(".course_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
     course_information.querySelector(".course_title").textContent = course["title"];
     course_information.querySelector(".course_credits").textContent = course["credits"];
 
-    let cores_list = course_information.querySelector(".cores_list");
+    const cores_list = course_information.querySelector(".cores_list");
     cores_list.textContent = "Cores: ";
     for (let i = 0; i < course["cores"].length; i++) {
         let core = course["cores"][i];
@@ -66,7 +63,7 @@ function create_course_information(course) {
 function load_courses() {
     const form_data = {
         "course_search_form": form_json("course_search_form"),
-    }
+    };
 
     fetch("course_lookup", {
         "method": "POST",
@@ -82,13 +79,40 @@ function load_courses() {
                 container.removeChild(container.lastChild);
             }
 
-            for (const course of data["courses"]) {
-                container.appendChild(create_course_information(course));
+            for (var i = 0; i < data["courses"].length; i++) {
+                const course = data["courses"][i];
+                const selected = data["selected"][i]
+                
+                const course_information = create_course_information(course);
+
+                const user_course = course_information.querySelector(".user_course");
+                if (selected == -1)
+                {
+                    user_course.textContent = "+";
+                    user_course.onclick = function () {
+                        select_course(course, this);
+                    }
+                }
+                else {
+                    user_course.textContent = "-";
+                    user_course.onclick = function () {
+                        remove_course(course, this);
+                    }
+                    
+                    const selected_button = document.querySelectorAll(".selected_information .user_course")[selected];
+                    selected_button.onclick = function () {
+                        remove_course(course, user_course);
+                    }
+
+                    const section_button = document.querySelectorAll("#section_list .user_course")[selected];
+                    section_button.onclick = function () {
+                        remove_course(course, user_course);
+                    }
+                }
+
+                container.appendChild(course_information);
             }
 
             initalize_collapsible();
         });
 }
-
-document.getElementById("test_display_courses").addEventListener("click", load_courses);
-load_courses()

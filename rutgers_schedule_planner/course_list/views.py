@@ -45,7 +45,18 @@ def course_lookup(request):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
     serializer = CourseSerializer(courses, many=True)
-    return JsonResponse({"courses": serializer.data})
+    
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
+        
+    selected = []
+    for course_json in serializer.data:
+        if course_json in request.session["selected_courses"]:
+            selected.append(request.session["selected_courses"].index(course_json))
+        else:
+            selected.append(-1)
+
+    return JsonResponse({"courses": serializer.data, "selected": selected})
 
 
 def load_schedule_planner_forms(request):
@@ -94,8 +105,18 @@ def select_course(request):
 
 
 def remove_course(request):
-    request.session["selected_courses"] = []
-    return JsonResponse({"selected_courses": request.session["selected_courses"]})
+    course_data = json.loads(request.body.decode("utf-8"))
+    
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
+    
+    if course_data not in request.session["selected_courses"]:
+        return JsonResponse({"index": -1})
+    index = request.session["selected_courses"].index(course_data)
+    request.session["selected_courses"].pop(index)
+    request.session.modified = True
+
+    return JsonResponse({"index": index})
 
 
 def get_selected_courses(request):

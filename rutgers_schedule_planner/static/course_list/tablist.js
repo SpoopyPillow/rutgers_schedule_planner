@@ -12,7 +12,3 @@ function switch_tab() {
     this.classList.add("active_tab")
     document.getElementById(this.id.replace("tab-", "")).classList.add("active_content");
 }
-
-document.querySelectorAll(".tab_link").forEach(element => {
-    element.addEventListener("click", switch_tab);
-})

@@ -18,13 +18,91 @@ function load_section_filters() {
         })
 }
 
-function load_selected_course(course) {
-    const container = document.getElementById("section_list");
+function append_selected(course, target) {
+    const selected_list = document.getElementById("selected_list");
+    const selected_information = template_selected_information.content.cloneNode(true);
+    selected_information.querySelector(".selected_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
+    selected_information.querySelector(".user_course").textContent = "-";
+    selected_information.querySelector(".user_course").onclick = function () {
+        remove_course(course, target);
+    }
 
-    course_information = create_course_information(course)
-    container.appendChild(course_information);
+    const section_list = document.getElementById("section_list");
+    const course_information = create_course_information(course);
+    course_information.querySelector(".user_course").textContent = "-";
+    course_information.querySelector(".user_course").onclick = function () {
+        remove_course(course, target);
+    }
 
-    initalize_collapsible();
+    selected_list.appendChild(selected_information);
+    section_list.appendChild(course_information);
+}
+
+function pop_selected(index) {
+    const selected = document.querySelectorAll(".selected_information")[index];
+    while (selected.firstChild) {
+        selected.removeChild(selected.lastChild);
+    }
+    selected.remove();
+
+    const section = document.querySelectorAll("#section_list .course_information")[index];
+    while (section.firstChild) {
+        section.removeChild(section.lastChild);
+    }
+    section.remove();
+}
+
+function select_course(course, target) {
+    fetch("select_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify(course),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!("selected_course" in data)) {
+                return;
+            }
+
+            if (target != null) {
+                target.textContent = "-";
+                target.onclick = function () {
+                    remove_course(course, target);
+                }
+            }
+
+            load_section_filters();
+            append_selected(course, target);
+        });
+}
+
+function remove_course(course, target) {
+    fetch("remove_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify(course),
+    })
+        .then(response => response.json())
+        .then(data => {
+            const index = data["index"];
+            if (index == -1) {
+                return;
+            }
+
+            if (target != null) {
+                target.textContent = "+";
+                target.onclick = function () {
+                    select_course(course, target);
+                }
+            }
+
+            load_section_filters();
+            pop_selected(index);
+        });
 }
 
 function initialize_section_selection() {
@@ -39,64 +117,8 @@ function initialize_section_selection() {
             const courses = data["selected_courses"];
             load_section_filters();
             for (const course of courses) {
-                load_selected_course(course);
+                append_selected(course, null);
             }
-        })
-}
-
-function select_course(course_data) {
-    fetch("select_course", {
-        "method": "POST",
-        "headers": {
-            "X-CSRFToken": getCookie("csrftoken"),
-        },
-        "body": JSON.stringify(course_data),
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (!("selected_course" in data)) {
-                return;
-            }
-            course = data["selected_course"]
-
-            const container = document.getElementById("selected_courses");
-            let div = document.createElement("div");
-            let code = document.createElement("span");
-            div.appendChild(code);
-
-            code.textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
-
-            container.appendChild(div);
-
-            load_section_filters();
-            load_selected_course(course);
+            document.getElementById("selected_list").classList.add("finished");
         });
 }
-
-function remove_course() {
-    fetch("remove_course", {
-        "method": "POST",
-        "headers": {
-            "X-CSRFToken": getCookie("csrftoken"),
-        },
-        "body": JSON.stringify(),
-    })
-        .then(response => {
-            const container = document.getElementById("selected_courses");
-            while (container.firstChild) {
-                container.removeChild(container.lastChild);
-            }
-
-            load_section_filters();
-            load_selected_course(course);
-        })
-}
-
-function initialize_remove_course() {
-    document.querySelectorAll(".remove_course").forEach(button => {
-        button.onclick = remove_course;
-    })
-}
-
-initialize_remove_course();
-initialize_section_selection();

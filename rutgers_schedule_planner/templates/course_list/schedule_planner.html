@@ -17,13 +17,8 @@
                 <form id="course_search_form">
                     {{ course_search_form.as_p }}
                 </form>
-                <button class="remove_course">Remove courses</button>
-                <div id="selected_courses">
-                    {% for course in request.session.selected_courses %}
-                        <div>
-                            <span>{{ course.school.code }}:{{ course.subject.code }}:{{ course.code }}</span>
-                        </div>
-                    {% endfor %}
+                <div id="selected_list">
+                    <!-- SELECTED INFORMATION TEMPLATE -->
                 </div>
             </div>
             <div id="course_list">
@@ -44,7 +39,7 @@
     <template id="template_course_information">
         <div class="course_information">
             <div class="course_display collapsible">
-                <button class="select_course">+</button>
+                <button class="user_course"></button>
                 <span class="course_code"></span>
                 <span class="course_title"></span>
                 <span class="course_credits"></span>
@@ -92,15 +87,17 @@
         </tr>
     </template>
 
-    <script>
-        const template_course_information = document.getElementById("template_course_information");
-        const template_section_information = document.getElementById("template_section_information");
-        const template_section_class_information = document.getElementById("template_section_class_information");
-    </script>
+    <template id="template_selected_information">
+        <div class="selected_information">
+            <button class="user_course"></button>
+            <span class="selected_code"></span>
+        </div>
+    </template>
 
     <script src="{% static 'course_list/cookies.js' %}"></script>
     <script src="{% static 'course_list/course_selection.js' %}"></script>
     <script src="{% static 'course_list/collapsible.js' %}"></script>
     <script src="{% static 'course_list/tablist.js' %}"></script>
     <script src="{% static 'course_list/section_selection.js' %}"></script>
+    <script src="{% static 'course_list/initialize_schedule_planner.js' %}"></script>
 </body>
