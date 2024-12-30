@@ -16,6 +16,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class SectionSerializer(serializers.ModelSerializer):
+    section_type = serializers.CharField()
     comments = CommentSerializer(many=True)
     section_classes = SectionClass(source="sectionclass_set", many=True)
 

@@ -91,12 +91,8 @@ class CourseFilterForm(forms.Form):
 
 class SectionFilterForm(forms.Form):
     open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    section_type = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    credits = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    school = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    subject = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    core = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         if "courses" not in kwargs:
@@ -111,21 +107,17 @@ class SectionFilterForm(forms.Form):
 
         choices = {field: set() for field in self.fields.keys()}
 
-        choices["open_status"].add((True, "Open"))
-        choices["open_status"].add((False, "Closed"))
+        open_status_choices = [(True, "Open"), (False, "Closed")]
+        choices["open_status"].update(open_status_choices)
+
+        section_type_choices = [
+            ("traditional", "Traditional/Face-to-Face"),
+            ("hybrid", "Hybrid"),
+            ("online", "Online & Remote Instruction"),
+        ]
+        choices["section_type"].update(section_type_choices)
 
         for course in courses:
-            choices["code_level"].add((course.code_level(), course.code_level()))
-            choices["credits"].add((course.credits, course.credits))
-            choices["school"].add((course.school.code, course.school.title))
-            choices["subject"].add((course.subject.code, course.subject.title))
-
-            for core in course.cores.all():
-                choices["core"].add((core.code, core.description))
-            if len(course.cores.all()) == 0:
-                core = Core(code="N/A", description="N/A")
-                choices["core"].add((core.code, core.description))
-
             # TODO maybe add a method to do all of this for me
             for section in course.section_set.all():
                 for section_class in section.sectionclass_set.all():

@@ -146,6 +146,17 @@ class Section(models.Model):
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
         indexes = [models.Index(fields=["index"])]
 
+    def section_type(self):
+        section_classes = self.sectionclass_set.all()
+        class_types = [False if section_class.campus_num == "O" else True for section_class in section_classes]
+        
+        if all(class_types):
+            return "traditional"
+        elif any(class_types):
+            return "hybrid"
+        else:
+            return "online"
+
 
 class SectionClass(models.Model):
     section = models.ForeignKey(Section, on_delete=models.CASCADE)
