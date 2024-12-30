@@ -15,6 +15,7 @@ const template_section_information = document.getElementById("template_section_i
 const template_section_class_information = document.getElementById("template_section_class_information");
 const template_selected_information = document.getElementById("template_selected_information");
 
+var selected_courses = [];
 var section_filter_form = "";
 
 initialize_section_selection();

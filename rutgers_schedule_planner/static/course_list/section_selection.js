@@ -64,6 +64,8 @@ function select_course(course, target) {
                 }
             }
 
+            selected_courses.push(course);
+
             section_filter_form = data["section_filter_form"];
             load_section_filters();
             append_selected(course, target);
@@ -92,6 +94,8 @@ function remove_course(course, target) {
                 }
             }
 
+            selected_courses.splice(index, 1);
+
             section_filter_form = data["section_filter_form"];
             load_section_filters();
             pop_selected(index);
@@ -107,13 +111,14 @@ function initialize_section_selection() {
     })
         .then(response => response.json())
         .then(data => {
-            const courses = data["selected_courses"];
-            section_filter_form = data["section_filter_form"];
-
-            load_section_filters();
-            for (const course of courses) {
+            selected_courses = data["selected_courses"];
+            for (const course of selected_courses) {
                 append_selected(course, null);
             }
+
+            section_filter_form = data["section_filter_form"];
+            load_section_filters();
+
             document.getElementById("selected_list").classList.add("finished");
         });
 }
