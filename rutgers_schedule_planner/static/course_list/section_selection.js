@@ -1,48 +1,3 @@
-function load_section_filters() {
-    const container = document.getElementById("section_filters");
-    while (container.firstChild) {
-        container.removeChild(container.lastChild);
-    }
-
-    container.innerHTML = section_filter_form;
-}
-
-function append_selected(course, target) {
-    const selected_list = document.getElementById("selected_list");
-    const selected_information = template_selected_information.content.cloneNode(true);
-    selected_information.querySelector(".selected_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
-    selected_information.querySelector(".user_course").textContent = "-";
-    selected_information.querySelector(".user_course").onclick = function () {
-        remove_course(course, target);
-    }
-
-    const section_list = document.getElementById("section_list");
-    const course_information = create_course_information(course);
-    course_information.querySelector(".user_course").textContent = "-";
-    course_information.querySelector(".user_course").onclick = function () {
-        remove_course(course, target);
-    }
-
-    selected_list.appendChild(selected_information);
-    section_list.appendChild(course_information);
-
-    initialize_collapsible();
-}
-
-function pop_selected(index) {
-    const selected = document.querySelectorAll(".selected_information")[index];
-    while (selected.firstChild) {
-        selected.removeChild(selected.lastChild);
-    }
-    selected.remove();
-
-    const section = document.querySelectorAll("#section_list .course_information")[index];
-    while (section.firstChild) {
-        section.removeChild(section.lastChild);
-    }
-    section.remove();
-}
-
 function select_course(course, target) {
     fetch("select_course", {
         "method": "POST",
@@ -100,6 +55,62 @@ function remove_course(course, target) {
             load_section_filters();
             pop_selected(index);
         });
+}
+
+function load_section_filters() {
+    const container = document.getElementById("section_filters");
+    while (container.firstChild) {
+        container.removeChild(container.lastChild);
+    }
+
+    container.innerHTML = section_filter_form;
+}
+
+function append_selected(course, target) {
+    // COURSE SELECTION SIDEBAR
+    const selected_list = document.getElementById("selected_list");
+    const selected_information = template_selected_information.content.cloneNode(true);
+    selected_information.querySelector(".selected_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
+    selected_information.querySelector(".user_course").textContent = "-";
+    selected_information.querySelector(".user_course").onclick = function () {
+        remove_course(course, target);
+    }
+
+    // SECTION LIST
+    const section_list = document.getElementById("section_list");
+    const course_information = create_course_information(course);
+    course_information.querySelector(".user_course").textContent = "-";
+    course_information.querySelector(".user_course").onclick = function () {
+        remove_course(course, target);
+    }
+    // Create checkboxes
+    const thead_tr = course_information.querySelector("thead tr");
+    const th = document.createElement("th");
+    const thead_tr_checkbox = document.createElement("input");
+    thead_tr_checkbox.className = "select_all_sections";
+    thead_tr_checkbox.type = "checkbox";
+    thead_tr_checkbox.checked = true;
+    th.appendChild(thead_tr_checkbox)
+    thead_tr.insertBefore(th, thead_tr.firstChild);
+
+    selected_list.appendChild(selected_information);
+    section_list.appendChild(course_information);
+
+    initialize_collapsible();
+}
+
+function pop_selected(index) {
+    const selected = document.querySelectorAll(".selected_information")[index];
+    while (selected.firstChild) {
+        selected.removeChild(selected.lastChild);
+    }
+    selected.remove();
+
+    const section = document.querySelectorAll("#section_list .course_information")[index];
+    while (section.firstChild) {
+        section.removeChild(section.lastChild);
+    }
+    section.remove();
 }
 
 function initialize_section_selection() {

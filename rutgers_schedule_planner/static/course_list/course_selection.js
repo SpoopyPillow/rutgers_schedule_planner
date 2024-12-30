@@ -52,7 +52,7 @@ function create_course_information(course) {
         cores_list.appendChild(core_information);
     }
 
-    let section_list = course_information.querySelector(".section_list");
+    let section_list = course_information.querySelector(".section_list tbody");
     for (const section of course["sections"]) {
         section_list.appendChild(create_section_information(section));
     }
