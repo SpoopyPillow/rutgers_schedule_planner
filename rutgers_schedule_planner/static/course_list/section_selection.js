@@ -93,6 +93,18 @@ function append_selected(course, target) {
     th.appendChild(thead_tr_checkbox)
     thead_tr.insertBefore(th, thead_tr.firstChild);
 
+    for (const section_information of course_information.querySelectorAll(".section_information"))
+    {
+        const td = document.createElement("td");
+        const section_information_checkbox = document.createElement("input");
+        section_information_checkbox.className = "select_section";
+        section_information_checkbox.type = "checkbox";
+        section_information_checkbox.checked = true;
+        td.appendChild(section_information_checkbox);
+        section_information.insertBefore(td, section_information.firstChild);
+    }
+
+
     selected_list.appendChild(selected_information);
     section_list.appendChild(course_information);
 
