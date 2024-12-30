@@ -45,10 +45,10 @@ def course_lookup(request):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
     serializer = CourseSerializer(courses, many=True)
-    
+
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
-        
+
     selected = []
     for course_json in serializer.data:
         if course_json in request.session["selected_courses"]:
@@ -101,38 +101,37 @@ def select_course(request):
         return JsonResponse({})
     request.session["selected_courses"] += [serialized_course.data]
 
-    return JsonResponse({"selected_course": serialized_course.data})
+    form = SectionFilterForm(courses=request.session["selected_courses"])
+
+    return JsonResponse({"selected_course": serialized_course.data, "section_filter_form": form.as_p()})
 
 
 def remove_course(request):
     course_data = json.loads(request.body.decode("utf-8"))
-    
+
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
-    
     if course_data not in request.session["selected_courses"]:
         return JsonResponse({"index": -1})
+
     index = request.session["selected_courses"].index(course_data)
     request.session["selected_courses"].pop(index)
     request.session.modified = True
 
-    return JsonResponse({"index": index})
+    form = SectionFilterForm(courses=request.session["selected_courses"])
+
+    return JsonResponse({"index": index, "section_filter_form": form.as_p()})
 
 
 def get_selected_courses(request):
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
-    return JsonResponse({"selected_courses": request.session["selected_courses"]})
 
+    form = SectionFilterForm(courses=request.session["selected_courses"])
 
-def get_section_filters(request):
-    if "selected_courses" not in request.session:
-        request.session["selected_courses"] = []
-    courses_json = request.session["selected_courses"]
-    courses = [Course.objects.get(id=data["id"]) for data in courses_json]
-
-    form = SectionFilterForm(courses=courses)
-    return JsonResponse({"section_filter_form": form.as_p()})
+    return JsonResponse(
+        {"selected_courses": request.session["selected_courses"], "section_filter_form": form.as_p()}
+    )
 
 
 ########################################## UPDATING #####################################################

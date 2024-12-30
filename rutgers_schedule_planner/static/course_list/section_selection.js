@@ -1,21 +1,10 @@
 function load_section_filters() {
-    fetch("get_section_filters", {
-        "method": "POST",
-        "headers": {
-            "X-CSRFToken": getCookie("csrftoken"),
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
-            const form = data["section_filter_form"];
+    const container = document.getElementById("section_filters");
+    while (container.firstChild) {
+        container.removeChild(container.lastChild);
+    }
 
-            const container = document.getElementById("section_filters");
-            while (container.firstChild) {
-                container.removeChild(container.lastChild);
-            }
-
-            container.innerHTML = form;
-        })
+    container.innerHTML = section_filter_form;
 }
 
 function append_selected(course, target) {
@@ -75,6 +64,7 @@ function select_course(course, target) {
                 }
             }
 
+            section_filter_form = data["section_filter_form"];
             load_section_filters();
             append_selected(course, target);
         });
@@ -102,6 +92,7 @@ function remove_course(course, target) {
                 }
             }
 
+            section_filter_form = data["section_filter_form"];
             load_section_filters();
             pop_selected(index);
         });
@@ -117,6 +108,8 @@ function initialize_section_selection() {
         .then(response => response.json())
         .then(data => {
             const courses = data["selected_courses"];
+            section_filter_form = data["section_filter_form"];
+
             load_section_filters();
             for (const course of courses) {
                 append_selected(course, null);
