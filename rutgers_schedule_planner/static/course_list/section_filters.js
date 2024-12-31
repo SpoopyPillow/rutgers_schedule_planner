@@ -11,23 +11,28 @@ function filter_sections() {
         for (var j = 0; j < course_data["sections"].length; j++) {
             const section_data = course_data["sections"][j];
             const section = sections[j];
+            const section_extra = section.nextElementSibling;
 
             section.style.display = "";
+            section_extra.style.display = "";
 
             if (!("open_status" in section_filters)
                 || !section_filters["open_status"].includes(section_data["open_status"] ? "True" : "False")) {
                 section.style.display = "none";
+                section_extra.style.display = "none";
             }
 
             if (!("section_type" in section_filters)
                 || !section_filters["section_type"].includes(section_data["section_type"])) {
                 section.style.display = "none";
+                section_extra.style.display = "none";
             }
 
             for (const section_class_data of section_data["section_classes"]) {
                 if (!("campus_title" in section_filters)
                     || !section_filters["campus_title"].includes(section_class_data["campus_title"])) {
                     section.style.display = "none";
+                    section_extra.style.display = "none";
                     break;
                 }
             }

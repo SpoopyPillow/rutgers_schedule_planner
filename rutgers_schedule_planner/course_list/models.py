@@ -134,13 +134,16 @@ class Section(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     instructor = models.CharField(max_length=255)
     open_status = models.BooleanField()
-    subtitle = models.CharField(max_length=255)
     exam_code = models.CharField(max_length=1)
     exam_code_text = models.CharField(max_length=255)
+    subtitle = models.CharField(max_length=255)
+    subtopic = models.CharField(max_length=255)
     notes = models.CharField(max_length=255)
     eligibility = models.CharField(max_length=255)
     comments = models.ManyToManyField(Comment, related_name="section")
+    majors = ArrayField(models.JSONField(), default=list)
     cross_listed = ArrayField(models.IntegerField(), default=list)
+    # TODO special_permission
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["index"], name="unique_section")]
@@ -149,7 +152,7 @@ class Section(models.Model):
     def section_type(self):
         section_classes = self.sectionclass_set.all()
         class_types = [False if section_class.campus_num == "O" else True for section_class in section_classes]
-        
+
         if all(class_types):
             return "TRADITIONAL"
         elif any(class_types):

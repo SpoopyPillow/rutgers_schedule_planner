@@ -41,7 +41,6 @@ def course_lookup(request):
         filters["cores__code"] = course_search["core"]
 
     courses = Course.objects.none()
-    print(filters)
     if any(course_search.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 
@@ -92,6 +91,7 @@ def schedule_planner(request):
 
 def select_course(request):
     course_data = json.loads(request.body.decode("utf-8"))
+    # TODO replace id with course specific identifiers
     course = Course.objects.get(id=course_data["id"])
 
     if "selected_courses" not in request.session:
@@ -198,11 +198,13 @@ def update_courses(request):
                     "course": course,
                     "instructor": section_data["instructorsText"],
                     "open_status": section_data["openStatus"],
-                    "subtitle": section_data["subtitle"],
                     "exam_code": section_data["examCode"],
                     "exam_code_text": section_data["examCodeText"],
+                    "subtitle": section_data["subtitle"],
+                    "subtopic": section_data["subtopic"],
                     "notes": section_data["sectionNotes"],
                     "eligibility": section_data["sectionEligibility"],
+                    "majors": section_data["majors"],
                     "cross_listed": [i["registrationIndex"] for i in section_data["crossListedSections"]],
                 }
                 section = Section(**section_fields)

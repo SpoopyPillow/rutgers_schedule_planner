@@ -23,7 +23,37 @@ function create_section_information(section) {
         section_class_list.appendChild(create_section_class_information(section_class));
     }
 
-    section_information.querySelector(".notes").textContent = "Notes: " + section["notes"];
+    section_information.querySelector(".section_subtitle").textContent = "Subtitle: " + section["subtitle"];
+    section_information.querySelector(".section_subtopic").textContent = "Subtopic: " + section["subtopic"];
+    section_information.querySelector(".section_notes").textContent = "Notes: " + section["notes"];
+    section_information.querySelector(".section_eligibility").textContent = "Restrictions: " + section["eligibility"];
+    const section_comments = section_information.querySelector(".section_comments");
+    section_comments.textContent = "Comments: ";
+    for (var i = 0; i < section["comments"].length; i++) {
+        const comment = section["comments"][i];
+        section_comments.textContent += comment["description"];
+        if (i < section["comments"].length - 1) {
+            section_comments.textContent += "; ";
+        }
+    }
+    const section_majors = section_information.querySelector(".section_majors");
+    section_majors.textContent = "Open To: "
+    for (var i = 0; i < section["majors"].length; i++) {
+        const major = section["majors"][i];
+        section_majors.textContent += JSON.stringify(major);
+        if (i < section["majors"].length - 1) {
+            section_majors.textContent += "; ";
+        }
+    }
+    const section_cross_listed = section_information.querySelector(".section_cross_listed");
+    section_cross_listed.textContent = "Cross Listed: ";
+    for (var i = 0; i < section["cross_listed"].length; i++) {
+        const cross_listed = section["cross_listed"][i];
+        section_cross_listed.textContent += cross_listed;
+        if (i < section["cross_listed"].length - 1) {
+            section_cross_listed.textContent += "; ";
+        }
+    }
 
     return section_information;
 }
@@ -37,14 +67,14 @@ function create_course_information(course) {
 
     const cores_list = course_information.querySelector(".cores_list");
     cores_list.textContent = "Cores: ";
-    for (let i = 0; i < course["cores"].length; i++) {
+    for (var i = 0; i < course["cores"].length; i++) {
         let core = course["cores"][i];
 
         let core_information = document.createElement("span");
         core_information.className = "core_information";
         core_information.textContent = core["description"] + " (" + core["code"] + ")";
         if (i < course["cores"].length - 1) {
-            core_information.textContent += ", ";
+            core_information.textContent += "; ";
         }
         cores_list.appendChild(core_information);
     }
