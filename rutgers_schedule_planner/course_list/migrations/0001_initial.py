@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                 ('instructor', models.CharField(max_length=255)),
                 ('open_status', models.BooleanField()),
                 ('notes', models.CharField(max_length=255)),
-                ('restrictions', models.CharField(max_length=255)),
+                ('eligibility', models.CharField(max_length=255)),
                 ('comments', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=255), default=list, size=None)),
                 ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_list.course')),
             ],

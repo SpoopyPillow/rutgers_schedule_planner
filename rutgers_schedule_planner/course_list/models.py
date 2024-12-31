@@ -138,7 +138,7 @@ class Section(models.Model):
     exam_code = models.CharField(max_length=1)
     exam_code_text = models.CharField(max_length=255)
     notes = models.CharField(max_length=255)
-    restrictions = models.CharField(max_length=255)
+    eligibility = models.CharField(max_length=255)
     comments = models.ManyToManyField(Comment, related_name="section")
     cross_listed = ArrayField(models.IntegerField(), default=list)
 

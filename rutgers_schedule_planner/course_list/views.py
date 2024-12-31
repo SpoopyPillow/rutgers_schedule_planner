@@ -201,7 +201,7 @@ def update_courses(request):
                     "exam_code": section_data["examCode"],
                     "exam_code_text": section_data["examCodeText"],
                     "notes": section_data["sectionNotes"],
-                    "restrictions": section_data["sectionEligibility"],
+                    "eligibility": section_data["sectionEligibility"],
                     "cross_listed": [i["registrationIndex"] for i in section_data["crossListedSections"]],
                 }
                 section = Section(**section_fields)

@@ -23,6 +23,8 @@ function create_section_information(section) {
         section_class_list.appendChild(create_section_class_information(section_class));
     }
 
+    section_information.querySelector(".notes").textContent = "Notes: " + section["notes"];
+
     return section_information;
 }
 
@@ -69,6 +71,7 @@ function load_courses() {
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             const container = document.getElementById("course_list");
             while (container.firstChild) {
                 container.removeChild(container.lastChild);
