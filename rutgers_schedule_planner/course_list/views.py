@@ -33,14 +33,15 @@ def course_lookup(request):
 
     filters = {"level__in": student["levels"]}
 
-    if course_search["school"] is not None:
+    if course_search["school"] != "":
         filters["school__code"] = course_search["school"]
-    if course_search["subject"] is not None:
+    if course_search["subject"] != "":
         filters["subject__code"] = course_search["subject"]
     if course_search["core"] != "":
         filters["cores__code"] = course_search["core"]
 
     courses = Course.objects.none()
+    print(filters)
     if any(course_search.values()):
         courses = Course.objects.filter(**filters).order_by("school", "subject", "code")
 

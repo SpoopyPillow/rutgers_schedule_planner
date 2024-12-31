@@ -7,38 +7,44 @@ class StudentRelatedForm(forms.Form):
     term_choices = [
         ("1", "Spring"),
     ]
-    term = forms.IntegerField(widget=forms.RadioSelect(choices=term_choices), required=True)
+    term = forms.ChoiceField(widget=forms.RadioSelect, choices=term_choices)
 
     location_choices = [
         ("nb", "New Brunswick"),
     ]
-    locations = forms.MultipleChoiceField(
-        widget=forms.CheckboxSelectMultiple, choices=location_choices, required=True
-    )
+    locations = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=location_choices)
 
     level_choices = [
         ("U", "Undergraduate"),
         ("G", "Graduate"),
     ]
-    levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices, required=True)
+    levels = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, choices=level_choices)
 
 
 class CourseSearchForm(forms.Form):
-    school_choices = [(None, "None")] + [
-        (school.code, str(school.code) + " " + school.title) for school in School.objects.all().order_by("code")
-    ]
-    school = forms.IntegerField(widget=forms.Select(choices=school_choices), required=False)
+    school = forms.ChoiceField(required=False)
+    subject = forms.ChoiceField(required=False)
+    core = forms.ChoiceField(required=False)
 
-    subject_choices = [(None, "None")] + [
-        (subject.code, str(subject.code) + " " + subject.title)
-        for subject in Subject.objects.all().order_by("code")
-    ]
-    subject = forms.IntegerField(widget=forms.Select(choices=subject_choices), required=False)
+    def __init__(self, *args, **kwargs):
+        super(CourseSearchForm, self).__init__(*args, **kwargs)
 
-    core_choices = [(None, "None")] + [
-        (core.code, str(core.code) + " " + core.description) for core in Core.objects.all().order_by("code")
-    ]
-    core = forms.CharField(widget=forms.Select(choices=core_choices), max_length=255, required=False)
+        school_choices = [("", "None")] + [
+            (school.code, str(school.code) + " " + school.title)
+            for school in School.objects.all().order_by("code")
+        ]
+        self.fields["school"].choices = school_choices
+
+        subject_choices = [("", "None")] + [
+            (subject.code, str(subject.code) + " " + subject.title)
+            for subject in Subject.objects.all().order_by("code")
+        ]
+        self.fields["subject"].choices = subject_choices
+
+        core_choices = [("", "None")] + [
+            (core.code, str(core.code) + " " + core.description) for core in Core.objects.all().order_by("code")
+        ]
+        self.fields["core"].choices = core_choices
 
 
 class CourseFilterForm(forms.Form):
