@@ -151,11 +151,11 @@ class Section(models.Model):
         class_types = [False if section_class.campus_num == "O" else True for section_class in section_classes]
         
         if all(class_types):
-            return "traditional"
+            return "TRADITIONAL"
         elif any(class_types):
-            return "hybrid"
+            return "HYBRID"
         else:
-            return "online"
+            return "ONLINE"
 
 
 class SectionClass(models.Model):

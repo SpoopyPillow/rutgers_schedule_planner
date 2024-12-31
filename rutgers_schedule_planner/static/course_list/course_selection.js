@@ -1,8 +1,3 @@
-function form_json(id) {
-    const form = new FormData(document.getElementById(id));
-    return Object.fromEntries(Array.from(form.keys()).map(key => [key, form.getAll(key)]));
-}
-
 function create_section_class_information(section_class) {
     const section_class_information = template_section_class_information.content.cloneNode(true);
 

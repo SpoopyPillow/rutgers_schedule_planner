@@ -1,3 +1,8 @@
+function form_json(id) {
+    const form = new FormData(document.getElementById(id));
+    return Object.fromEntries(Array.from(form.keys()).map(key => [key, form.getAll(key)]));
+}
+
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {

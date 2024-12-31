@@ -92,7 +92,7 @@ class CourseFilterForm(forms.Form):
 class SectionFilterForm(forms.Form):
     open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
     section_type = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+    campus_title = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, *args, **kwargs):
         if "courses" not in kwargs:
@@ -111,9 +111,9 @@ class SectionFilterForm(forms.Form):
         choices["open_status"].update(open_status_choices)
 
         section_type_choices = [
-            ("traditional", "Traditional/Face-to-Face"),
-            ("hybrid", "Hybrid"),
-            ("online", "Online & Remote Instruction"),
+            ("TRADITIONAL", "Traditional/Face-to-Face"),
+            ("HYBRID", "Hybrid"),
+            ("ONLINE", "Online & Remote Instruction"),
         ]
         choices["section_type"].update(section_type_choices)
 
@@ -121,7 +121,7 @@ class SectionFilterForm(forms.Form):
             # TODO maybe add a method to do all of this for me
             for section in course.section_set.all():
                 for section_class in section.sectionclass_set.all():
-                    choices["campus"].add((section_class.campus_title, section_class.campus_title))
+                    choices["campus_title"].add((section_class.campus_title, section_class.campus_title))
 
         for field, choices in choices.items():
             choices = list(choices)

@@ -15,20 +15,24 @@
     flex-direction: row;
 }
 
+#course_selection .filter_sidebar {
+    flex: 1;
+}
+
+#course_selection #course_list {
+    flex: 3;
+}
+
 #section_selection {
     display: flex;
     flex-direction: row;
 }
 
-.filter_sidebar {
+#section_selection .filter_sidebar {
     flex: 1;
 }
 
-#course_list {
-    flex: 3;
-}
-
-#section_list {
+#section_selection #section_list {
     flex: 3;
 }
 
