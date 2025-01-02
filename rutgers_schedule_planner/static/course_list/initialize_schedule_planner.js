@@ -18,7 +18,7 @@ document.querySelectorAll(".tab_link").forEach(element => {
 
 document.getElementById("test_display_courses").addEventListener("click", load_courses);
 
-waitForFinish("#selected_list").then((element) => {
+waitForFinish("#course_selection .selected_list").then((element) => {
     load_courses();
     filter_sections();
 });

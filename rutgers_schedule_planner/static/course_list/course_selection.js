@@ -127,13 +127,8 @@ function load_courses() {
                         remove_course(course, this);
                     }
                     
-                    const selected_button = document.querySelectorAll(".selected_information .user_course")[selected];
+                    const selected_button = document.querySelectorAll("#course_selection .selected_information .user_course")[selected];
                     selected_button.onclick = function () {
-                        remove_course(course, user_course);
-                    }
-
-                    const section_button = document.querySelectorAll("#section_list .user_course")[selected];
-                    section_button.onclick = function () {
                         remove_course(course, user_course);
                     }
                 }

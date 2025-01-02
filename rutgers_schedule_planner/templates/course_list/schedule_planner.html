@@ -13,11 +13,11 @@
     <div id="content">
         <div id="course_selection" class="tab_content active_content">
             <div class="filter_sidebar">
-                <div id="test_display_courses">test display courses</div>
                 <form id="course_search_form">
                     {{ course_search_form.as_p }}
                 </form>
-                <div id="selected_list">
+                <div id="test_display_courses">test display courses</div>
+                <div class="selected_list">
                     <!-- SELECTED INFORMATION TEMPLATE -->
                 </div>
             </div>
@@ -27,8 +27,10 @@
         </div>
         <div id="section_selection" class="tab_content">
             <div class="filter_sidebar">
-                <form id="section_filters">
-                </form>
+                <form id="section_filters"></form>
+                <div class="selected_list">
+                    <!-- SELECTED INFORMATION TEMPLATE -->
+                </div>
             </div>
             <div id="section_list">
                 <!-- COURSE INFORMATION TEMPLATE -->
