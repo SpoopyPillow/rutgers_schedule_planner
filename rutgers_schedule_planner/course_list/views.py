@@ -90,36 +90,93 @@ def schedule_planner(request):
 
 
 def select_course(request):
-    course_data = json.loads(request.body.decode("utf-8"))
+    data = json.loads(request.body.decode("utf-8"))
+    course_data = data["course"]
+
     # TODO replace id with course specific identifiers
     course = Course.objects.get(id=course_data["id"])
 
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
+        request.session["hidden_courses"] = []
 
     serialized_course = CourseSerializer(course)
     if serialized_course.data in request.session["selected_courses"]:
         return JsonResponse({})
     request.session["selected_courses"] += [serialized_course.data]
+    request.session["hidden_courses"] += [0]
 
-    form = SectionFilterForm(courses=request.session["selected_courses"])
+    form = SectionFilterForm(
+        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+    )
 
     return JsonResponse({"selected_course": serialized_course.data, "section_filter_form": form.as_p()})
 
 
 def remove_course(request):
-    course_data = json.loads(request.body.decode("utf-8"))
+    data = json.loads(request.body.decode("utf-8"))
+    course_data = data["course"]
 
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
+        request.session["hidden_courses"] = []
+
     if course_data not in request.session["selected_courses"]:
         return JsonResponse({"index": -1})
 
     index = request.session["selected_courses"].index(course_data)
     request.session["selected_courses"].pop(index)
+    request.session["hidden_courses"].pop(index)
+
     request.session.modified = True
 
-    form = SectionFilterForm(courses=request.session["selected_courses"])
+    form = SectionFilterForm(
+        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+    )
+
+    return JsonResponse({"index": index, "section_filter_form": form.as_p()})
+
+
+def hide_course(request):
+    data = json.loads(request.body.decode("utf-8"))
+    course_data = data["course"]
+
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
+        request.session["hidden_courses"] = []
+
+    if course_data not in request.session["selected_courses"]:
+        return JsonResponse({"index": -1})
+
+    index = request.session["selected_courses"].index(course_data)
+    request.session["hidden_courses"][index] = 1
+    request.session.modified = True
+    
+    form = SectionFilterForm(
+        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+    )
+
+    return JsonResponse({"index": index, "section_filter_form": form.as_p()})
+
+
+def show_course(request):
+    data = json.loads(request.body.decode("utf-8"))
+    course_data = data["course"]
+
+    if "selected_courses" not in request.session:
+        request.session["selected_courses"] = []
+        request.session["hidden_courses"] = []
+
+    if course_data not in request.session["selected_courses"]:
+        return JsonResponse({"index": -1})
+
+    index = request.session["selected_courses"].index(course_data)
+    request.session["hidden_courses"][index] = 0
+    request.session.modified = True
+    
+    form = SectionFilterForm(
+        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+    )
 
     return JsonResponse({"index": index, "section_filter_form": form.as_p()})
 
@@ -127,11 +184,18 @@ def remove_course(request):
 def get_selected_courses(request):
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
+        request.session["hidden_courses"] = []
 
-    form = SectionFilterForm(courses=request.session["selected_courses"])
+    form = SectionFilterForm(
+        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+    )
 
     return JsonResponse(
-        {"selected_courses": request.session["selected_courses"], "section_filter_form": form.as_p()}
+        {
+            "selected_courses": request.session["selected_courses"],
+            "hidden_courses": request.session["hidden_courses"],
+            "section_filter_form": form.as_p(),
+        }
     )
 
 

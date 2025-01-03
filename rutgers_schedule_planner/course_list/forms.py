@@ -47,52 +47,53 @@ class CourseSearchForm(forms.Form):
         self.fields["core"].choices = core_choices
 
 
-class CourseFilterForm(forms.Form):
-    open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    credits = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    school = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    subject = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
-    core = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+# class CourseFilterForm(forms.Form):
+#     open_status = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     code_level = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     campus = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     credits = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     school = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     subject = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
+#     core = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple)
 
-    def __init__(self, *args, **kwargs):
-        if "courses" not in kwargs:
-            super(SectionFilterForm, self).__init__(*args, **kwargs)
-            return
+#     def __init__(self, *args, **kwargs):
+#         if "courses" not in kwargs:
+#             super(SectionFilterForm, self).__init__(*args, **kwargs)
+#             return
 
-        courses = kwargs.pop("courses")
-        super(SectionFilterForm, self).__init__(*args, **kwargs)
+#         courses = kwargs.pop("courses")
 
-        if not all(isinstance(course, Course) for course in courses):
-            courses = [Course.objects.get(id=data["id"]) for data in courses]
+#         if not all(isinstance(course, Course) for course in courses):
+#             courses = [Course.objects.get(id=data["id"]) for data in courses]
 
-        choices = {field: set() for field in self.fields.keys()}
+#         super(SectionFilterForm, self).__init__(*args, **kwargs)
 
-        choices["open_status"].add((True, "Open"))
-        choices["open_status"].add((False, "Closed"))
+#         choices = {field: set() for field in self.fields.keys()}
 
-        for course in courses:
-            choices["code_level"].add((course.code_level(), course.code_level()))
-            choices["credits"].add((course.credits, course.credits))
-            choices["school"].add((course.school.code, course.school.title))
-            choices["subject"].add((course.subject.code, course.subject.title))
+#         choices["open_status"].add((True, "Open"))
+#         choices["open_status"].add((False, "Closed"))
 
-            for core in course.cores.all():
-                choices["core"].add((core.code, core.description))
-            if len(course.cores.all()) == 0:
-                core = Core(code="N/A", description="N/A")
-                choices["core"].add((core.code, core.description))
+#         for course in courses:
+#             choices["code_level"].add((course.code_level(), course.code_level()))
+#             choices["credits"].add((course.credits, course.credits))
+#             choices["school"].add((course.school.code, course.school.title))
+#             choices["subject"].add((course.subject.code, course.subject.title))
 
-            # TODO maybe add a method to do all of this for me
-            for section in course.section_set.all():
-                for section_class in section.sectionclass_set.all():
-                    choices["campus"].add((section_class.campus_title, section_class.campus_title))
+#             for core in course.cores.all():
+#                 choices["core"].add((core.code, core.description))
+#             if len(course.cores.all()) == 0:
+#                 core = Core(code="N/A", description="N/A")
+#                 choices["core"].add((core.code, core.description))
 
-        for field, choices in choices.items():
-            choices = list(choices)
-            self.fields[field].choices = sorted(choices)
-            self.fields[field].initial = [choice[0] for choice in choices]
+#             # TODO maybe add a method to do all of this for me
+#             for section in course.section_set.all():
+#                 for section_class in section.sectionclass_set.all():
+#                     choices["campus"].add((section_class.campus_title, section_class.campus_title))
+
+#         for field, choices in choices.items():
+#             choices = list(choices)
+#             self.fields[field].choices = sorted(choices)
+#             self.fields[field].initial = [choice[0] for choice in choices]
 
 
 class SectionFilterForm(forms.Form):
@@ -106,10 +107,15 @@ class SectionFilterForm(forms.Form):
             return
 
         courses = kwargs.pop("courses")
-        super(SectionFilterForm, self).__init__(*args, **kwargs)
+        if "hidden_courses" in kwargs:
+            hidden_courses = kwargs.pop("hidden_courses")
+            courses = [course for (course, hidden) in zip(courses, hidden_courses) if not hidden]
 
+        # TODO directly use serialized data
         if not all(isinstance(course, Course) for course in courses):
             courses = [Course.objects.get(id=data["id"]) for data in courses]
+
+        super(SectionFilterForm, self).__init__(*args, **kwargs)
 
         choices = {field: set() for field in self.fields.keys()}
 

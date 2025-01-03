@@ -8,7 +8,9 @@ function load_section_filters(form) {
 
     container.querySelectorAll("input").forEach(element => {
         element.addEventListener("click", filter_sections);
-    })
+    });
+
+    filter_sections();
 }
 
 function select_course(course, target) {
@@ -17,7 +19,7 @@ function select_course(course, target) {
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify(course),
+        "body": JSON.stringify({ "course": course }),
     })
         .then(response => response.json())
         .then(data => {
@@ -33,9 +35,10 @@ function select_course(course, target) {
             }
 
             selected_courses.push(course);
+            hidden_courses.push(0);
 
-            load_section_filters(data["section_filter_form"]);
             append_selected(course, target);
+            load_section_filters(data["section_filter_form"]);
         });
 }
 
@@ -45,7 +48,7 @@ function remove_course(course, target) {
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify(course),
+        "body": JSON.stringify({ "course": course }),
     })
         .then(response => response.json())
         .then(data => {
@@ -62,35 +65,76 @@ function remove_course(course, target) {
             }
 
             selected_courses.splice(index, 1);
+            hidden_courses.splice(index, 1);
 
-            load_section_filters(data["section_filter_form"]);
             pop_selected(index);
+            load_section_filters(data["section_filter_form"]);
         });
 }
 
-function toggle_course(course) {
-    const index = selected_courses.findIndex(function (item, i) {
-        return item.id === course.id;
+function hide_course(course) {
+    fetch("hide_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify({ "course": course }),
     })
+        .then(response => response.json())
+        .then(data => {
+            const index = data["index"];
+            if (index == -1) {
+                return;
+            }
+            hidden_courses[index] = 1;
 
-    const selected = document.querySelectorAll("#section_selection .selected_information")[index];
-    const course_information = document.querySelectorAll("#section_selection .course_information")[index];
+            const selected = document.querySelectorAll("#section_selection .selected_information")[index];
+            const course_information = document.querySelectorAll("#section_selection .course_information")[index];
 
-    if (selected.classList.contains("user_hidden")) {
-        selected.classList.remove("user_hidden");
-        selected.querySelector(".user_course").textContent = "v";
+            selected.classList.add("user_hidden");
+            selected.querySelector(".user_course").textContent = "h";
+            selected.querySelector(".user_course").onclick = function () {
+                show_course(course);
+            }
 
-        course_information.style.display = "";
-    }
-    else {
-        selected.classList.add("user_hidden");
-        selected.querySelector(".user_course").textContent = "h";
+            course_information.style.display = "none";
 
-        course_information.style.display = "none";
-    }
+            load_section_filters(data["section_filter_form"]);
+        })
 }
 
-function append_selected(course, target) {
+function show_course(course) {
+    fetch("show_course", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify({ "course": course }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            const index = data["index"];
+            if (index == -1) {
+                return;
+            }
+            hidden_courses[index] = 0;
+
+            const selected = document.querySelectorAll("#section_selection .selected_information")[index];
+            const course_information = document.querySelectorAll("#section_selection .course_information")[index];
+
+            selected.classList.remove("user_hidden");
+            selected.querySelector(".user_course").textContent = "v";
+            selected.querySelector(".user_course").onclick = function () {
+                hide_course(course);
+            }
+
+            course_information.style.display = "";
+
+            load_section_filters(data["section_filter_form"]);
+        })
+}
+
+function append_selected(course, target, hidden = false) {
     // COURSE SELECTION SIDEBAR
     const cselected_list = document.querySelector("#course_selection .selected_list");
     const cselected_information = template_selected_information.content.cloneNode(true);
@@ -106,10 +150,20 @@ function append_selected(course, target) {
     const sselected_list = document.querySelector("#section_selection .selected_list");
     const sselected_information = template_selected_information.content.cloneNode(true);
     sselected_information.querySelector(".selected_code").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
-    sselected_information.querySelector(".user_course").textContent = "v";
-    sselected_information.querySelector(".user_course").onclick = function () {
-        toggle_course(course);
+    if (!hidden) {
+        sselected_information.querySelector(".user_course").textContent = "v";
+        sselected_information.querySelector(".user_course").onclick = function () {
+            hide_course(course);
+        }
     }
+    else {
+        sselected_information.querySelector(".selected_information").classList.add("user_hidden");
+        sselected_information.querySelector(".user_course").textContent = "h";
+        sselected_information.querySelector(".user_course").onclick = function () {
+            show_course(course);
+        }
+    }
+
     sselected_list.appendChild(sselected_information);
 
 
@@ -118,8 +172,16 @@ function append_selected(course, target) {
     const course_information = create_course_information(course);
     course_information.querySelector(".user_course").textContent = "v";
     course_information.querySelector(".user_course").onclick = function () {
-        toggle_course(course);
+        hide_course(course);
     }
+
+    if (!hidden) {
+        course_information.querySelector(".course_information").style.display = "";
+    }
+    else {
+        course_information.querySelector(".course_information").style.display = "none";
+    }
+
     // Create checkboxes
     const thead_tr = course_information.querySelector("thead tr");
     const th = document.createElement("th");
@@ -178,9 +240,11 @@ function initialize_section_selection() {
     })
         .then(response => response.json())
         .then(data => {
-            for (const course of data["selected_courses"]) {
-                selected_courses.push(course);
-                append_selected(course, null);
+            selected_courses = data["selected_courses"];
+            hidden_courses = data["hidden_courses"];
+
+            for (var i = 0; i < selected_courses.length; i++) {
+                append_selected(data["selected_courses"][i], null, data["hidden_courses"][i]);
             }
 
             load_section_filters(data["section_filter_form"]);
