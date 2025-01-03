@@ -198,6 +198,19 @@ def select_section(request):
     return JsonResponse({"selected": request.session["selected_sections"][ci][si]})
 
 
+def select_all_sections(request):
+    data = json.loads(request.body.decode("utf-8"))
+    ci = data["course_index"]
+    checked = data["checked"]
+
+    request.session["selected_sections"][ci] = [1 if checked else 0] * len(
+        request.session["selected_sections"][ci]
+    )
+    request.session.modified = True
+    
+    return JsonResponse({})
+
+
 def deselect_section_filter(request):
     data = json.loads(request.body.decode("utf-8"))
     name = data["name"]

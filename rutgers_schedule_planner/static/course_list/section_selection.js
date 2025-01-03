@@ -87,6 +87,7 @@ function select_course(course, target) {
             if (!("selected_course" in data)) {
                 return;
             }
+            const course = data["selected_course"];
 
             if (target != null) {
                 target.textContent = "-";
@@ -254,6 +255,9 @@ function append_selected(course, target, hidden = false) {
     thead_tr_checkbox.className = "select_all_sections";
     thead_tr_checkbox.type = "checkbox";
     thead_tr_checkbox.checked = true;
+    thead_tr_checkbox.onclick = function () {
+        select_all_sections(course);
+    }
 
     th.appendChild(thead_tr_checkbox);
     thead_tr.insertBefore(th, thead_tr.firstChild);
@@ -327,6 +331,28 @@ function select_section(course, section_index) {
         .then(data => {
             selected_sections[course_index][section_index] = data["selected"];
         })
+}
+
+function select_all_sections(course) {
+    const course_index = selected_courses.indexOf(course);
+    const section_list = document.getElementById("section_list");
+    const checked = section_list.querySelectorAll(".select_all_sections")[course_index].checked;
+
+    selected_sections[course_index].fill(checked ? 1 : 0);
+    section_list.querySelectorAll(".select_section").forEach(element => {
+        element.checked = checked;
+    })
+
+    fetch("select_all_sections", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify({
+            "course_index": course_index,
+            "checked": checked
+        })
+    })
 }
 
 function initialize_section_selection() {
