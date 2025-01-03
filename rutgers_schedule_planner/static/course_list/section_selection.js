@@ -7,10 +7,29 @@ function load_section_filters(form) {
     container.innerHTML = form;
 
     container.querySelectorAll("input").forEach(element => {
-        element.addEventListener("click", filter_sections);
+        if (element.name in section_filters_unselected
+            && section_filters_unselected[element.name].includes(element.value)) {
+            element.checked = false;
+        }
+        element.onclick = function () {
+            filter_sections();
+            update_section_filters_unselected();
+        }
     });
 
     filter_sections();
+}
+
+function update_section_filters_unselected() {
+    section_filters_unselected = form_unselected("section_filters");
+
+    fetch("update_section_filters_unselected", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify({ "section_filters_unselected": section_filters_unselected }),
+    })
 }
 
 function select_course(course, target) {
@@ -19,7 +38,10 @@ function select_course(course, target) {
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify({ "course": course }),
+        "body": JSON.stringify({
+            "course": course,
+            "section_filter_form": form_json("section_filters")
+        }),
     })
         .then(response => response.json())
         .then(data => {
@@ -242,6 +264,7 @@ function initialize_section_selection() {
         .then(data => {
             selected_courses = data["selected_courses"];
             hidden_courses = data["hidden_courses"];
+            section_filters_unselected = data["section_filters_unselected"];
 
             for (var i = 0; i < selected_courses.length; i++) {
                 append_selected(data["selected_courses"][i], null, data["hidden_courses"][i]);

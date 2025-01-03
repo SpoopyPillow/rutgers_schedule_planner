@@ -5,3 +5,4 @@ const template_selected_information = document.getElementById("template_selected
 
 var selected_courses = [];
 var hidden_courses = [];
+var section_filters_unselected = {};

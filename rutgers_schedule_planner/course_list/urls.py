@@ -13,6 +13,11 @@ urlpatterns = [
     path("remove_course", views.remove_course, name="remove_course"),
     path("show_course", views.show_course, name="show_course"),
     path("hide_course", views.hide_course, name="hide_course"),
+    path(
+        "update_section_filters_unselected",
+        views.update_section_filters_unselected,
+        name="update_section_filters_unselected",
+    ),
     path("update_db", views.update_db, name="update_db"),
     path("update_courses", views.update_courses, name="update_courses"),
     path("update_open_status", views.update_open_status, name="update_open_status"),
