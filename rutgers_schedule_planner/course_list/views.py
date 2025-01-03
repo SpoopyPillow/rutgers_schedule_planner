@@ -200,13 +200,38 @@ def select_section(request):
     return JsonResponse({"selected": request.session["selected_sections"][ci][si]})
 
 
-def update_unselected_section_filters(request):
+def deselect_section_filter(request):
     data = json.loads(request.body.decode("utf-8"))
-    unselected_section_filters = data["unselected_section_filters"]
+    name = data["name"]
+    value = data["value"]
 
-    request.session["unselected_section_filters"] = unselected_section_filters
+    if "deselected_section_filters" not in request.session:
+        request.session["deselected_section_filters"] = {}
 
-    return JsonResponse({})
+    if name not in request.session["deselected_section_filters"]:
+        request.session["deselected_section_filters"][name] = []
+    if value not in request.session["deselected_section_filters"][name]:
+        request.session["deselected_section_filters"][name] += [value]
+    request.session.modified = True
+
+    return JsonResponse({"deselected_section_filters": request.session["deselected_section_filters"]})
+
+
+def select_section_filter(request):
+    data = json.loads(request.body.decode("utf-8"))
+    name = data["name"]
+    value = data["value"]
+
+    if "deselected_section_filters" not in request.session:
+        request.session["deselected_section_filters"] = {}
+
+    if name not in request.session["deselected_section_filters"]:
+        request.session["deselected_section_filters"][name] = []
+    if value in request.session["deselected_section_filters"][name]:
+        request.session["deselected_section_filters"][name].remove(value)
+        request.session.modified = True
+
+    return JsonResponse({"deselected_section_filters": request.session["deselected_section_filters"]})
 
 
 def get_selected_courses(request):
@@ -214,8 +239,8 @@ def get_selected_courses(request):
         request.session["selected_courses"] = []
         request.session["selected_sections"] = []
         request.session["hidden_courses"] = []
-    if "unselected_section_filters" not in request.session:
-        request.session["unselected_section_filters"] = {}
+    if "deselected_section_filters" not in request.session:
+        request.session["deselected_section_filters"] = {}
 
     form = SectionFilterForm(
         courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
@@ -226,7 +251,7 @@ def get_selected_courses(request):
             "selected_courses": request.session["selected_courses"],
             "selected_sections": request.session["selected_sections"],
             "hidden_courses": request.session["hidden_courses"],
-            "unselected_section_filters": request.session["unselected_section_filters"],
+            "deselected_section_filters": request.session["deselected_section_filters"],
             "section_filter_form": form.as_p(),
         }
     )

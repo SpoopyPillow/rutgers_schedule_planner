@@ -14,11 +14,8 @@ urlpatterns = [
     path("show_course", views.show_course, name="show_course"),
     path("hide_course", views.hide_course, name="hide_course"),
     path("select_section", views.select_section, name="select_section"),
-    path(
-        "update_unselected_section_filters",
-        views.update_unselected_section_filters,
-        name="update_unselected_section_filters",
-    ),
+    path("deselect_section_filter", views.deselect_section_filter, name="deselect_section_filter"),
+    path("select_section_filter", views.select_section_filter, name="select_section_filter"),
     path("update_db", views.update_db, name="update_db"),
     path("update_courses", views.update_courses, name="update_courses"),
     path("update_open_status", views.update_open_status, name="update_open_status"),

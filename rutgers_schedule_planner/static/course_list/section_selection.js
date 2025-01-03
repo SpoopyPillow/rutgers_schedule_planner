@@ -7,33 +7,72 @@ function load_section_filters(form) {
     container.innerHTML = form;
 
     container.querySelectorAll("input").forEach(element => {
-        if (element.name in unselected_section_filters
-            && unselected_section_filters[element.name].includes(element.value)) {
+        if (element.name in deselected_section_filters
+            && deselected_section_filters[element.name].includes(element.value)) {
             element.checked = false;
+            element.onclick = function () {
+                filter_sections();
+                select_section_filter(this);
+            }
         }
         else {
             element.checked = true;
-        }
-        element.onclick = function () {
-            filter_sections();
-            update_unselected_section_filters();
+            element.onclick = function () {
+                filter_sections();
+                deselect_section_filter(this);
+            }
         }
     });
 
     filter_sections();
 }
 
-function update_unselected_section_filters() {
-    unselected_section_filters = form_unselected("section_filters");
-
-    fetch("update_unselected_section_filters", {
+function deselect_section_filter(element) {
+    fetch("deselect_section_filter", {
         "method": "POST",
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify({ "unselected_section_filters": unselected_section_filters }),
+        "body": JSON.stringify({
+            "name": element.name,
+            "value": element.value
+        }),
     })
+        .then(response => response.json())
+        .then(data => {
+            deselected_section_filters = data["deselected_section_filters"];
+
+            element.checked = false;    
+            element.onclick = function () {
+                filter_sections();
+                select_section_filter(element);
+            }
+        });
 }
+
+function select_section_filter(element) {
+    fetch("select_section_filter", {
+        "method": "POST",
+        "headers": {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        "body": JSON.stringify({
+            "name": element.name,
+            "value": element.value
+        }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            deselected_section_filters = data["deselected_section_filters"];
+
+            element.checked = true;
+            element.onclick = function () {
+                filter_sections();
+                deselect_section_filter(element);
+            }
+        });
+}
+
 
 function select_course(course, target) {
     fetch("select_course", {
@@ -276,7 +315,6 @@ function pop_selected(index) {
 
 function select_section(course, section_index) {
     const course_index = selected_courses.indexOf(course);
-    console.log(selected_sections);
 
     fetch("select_section", {
         "method": "POST",
@@ -303,7 +341,7 @@ function initialize_section_selection() {
     })
         .then(response => response.json())
         .then(data => {
-            unselected_section_filters = data["unselected_section_filters"];
+            deselected_section_filters = data["deselected_section_filters"];
 
             for (var i = 0; i < data["selected_courses"].length; i++) {
                 const selected_course = data["selected_courses"][i];
