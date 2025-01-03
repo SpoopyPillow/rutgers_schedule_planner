@@ -92,13 +92,11 @@ def schedule_planner(request):
 def select_course(request):
     data = json.loads(request.body.decode("utf-8"))
     course_data = data["course"]
-    section_filters = data["section_filter_form"]
 
     if "selected_courses" not in request.session:
         request.session["selected_courses"] = []
         request.session["selected_sections"] = []
         request.session["hidden_courses"] = []
-    request.session["section_filters"] = section_filters
 
     # TODO replace id with course specific identifiers
     course = Course.objects.get(id=course_data["id"])
@@ -111,7 +109,6 @@ def select_course(request):
     request.session["hidden_courses"] += [0]
 
     form = SectionFilterForm(
-        initial=section_filters,
         courses=request.session["selected_courses"],
         hidden_courses=request.session["hidden_courses"],
     )
@@ -139,7 +136,8 @@ def remove_course(request):
     request.session.modified = True
 
     form = SectionFilterForm(
-        courses=request.session["selected_courses"], hidden_courses=request.session["hidden_courses"]
+        courses=request.session["selected_courses"],
+        hidden_courses=request.session["hidden_courses"],
     )
 
     return JsonResponse({"index": index, "section_filter_form": form.as_p()})

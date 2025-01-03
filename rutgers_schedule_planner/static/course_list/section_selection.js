@@ -42,7 +42,7 @@ function deselect_section_filter(element) {
         .then(data => {
             deselected_section_filters = data["deselected_section_filters"];
 
-            element.checked = false;    
+            element.checked = false;
             element.onclick = function () {
                 filter_sections();
                 select_section_filter(element);
@@ -80,10 +80,7 @@ function select_course(course, target) {
         "headers": {
             "X-CSRFToken": getCookie("csrftoken"),
         },
-        "body": JSON.stringify({
-            "course": course,
-            "section_filter_form": form_json("section_filters")
-        }),
+        "body": JSON.stringify({ "course": course }),
     })
         .then(response => response.json())
         .then(data => {

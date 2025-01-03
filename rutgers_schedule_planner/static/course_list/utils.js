@@ -3,26 +3,6 @@ function form_json(id) {
     return Object.fromEntries(Array.from(form.keys()).map(key => [key, form.getAll(key)]));
 }
 
-function form_unselected(id) {
-    const form = document.getElementById(id);
-    
-    const unchecked = {};
-    for (const input of form.querySelectorAll("input")) {
-        if (input.checked) {
-            continue;
-        }
-
-        const name = input.getAttribute("name");
-        const value = input.getAttribute("value");
-        if (!(name in unchecked)) {
-            unchecked[name] = [];
-        }
-        unchecked[name].push(value);
-    }
-
-    return unchecked;
-}
-
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
