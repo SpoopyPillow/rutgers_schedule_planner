@@ -21,7 +21,8 @@
 }
 
 .bar {
+    position: relative;
     flex: 1;
     width: 100%;
-    outline: 1px solid black;
+    outline: 0.5px dashed black;
 }

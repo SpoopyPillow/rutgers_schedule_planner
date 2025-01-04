@@ -1,8 +1,3 @@
-function form_json(id) {
-    const form = new FormData(document.getElementById(id));
-    return Object.fromEntries(Array.from(form.keys()).map(key => [key, form.getAll(key)]));
-}
-
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -17,4 +12,31 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+
+function form_json(id) {
+    const form = new FormData(document.getElementById(id));
+    return Object.fromEntries(Array.from(form.keys()).map(key => [key, form.getAll(key)]));
+}
+
+function time_to_minutes(time) {
+    const split = time.split(":").map(element => Number(element));
+    return split[0] * 60 + split[1] + split[2] / 60;
+}
+
+function time_to_percent(time) {
+    const time_minutes = time_to_minutes(time);
+    const start_minutes = time_to_minutes(start_time);
+    const end_minutes = time_to_minutes(end_time);
+
+    return (time_minutes - start_minutes) / (end_minutes - start_minutes) * 100;
+}
+
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }

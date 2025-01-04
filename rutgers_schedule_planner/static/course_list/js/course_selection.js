@@ -101,7 +101,6 @@ function load_courses() {
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data);
             const container = document.getElementById("course_list");
             while (container.firstChild) {
                 container.removeChild(container.lastChild);
