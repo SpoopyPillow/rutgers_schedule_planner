@@ -2,13 +2,14 @@
 
 <head>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'course_list/css/style.css' %}">
 </head>
 
 <body>
     <div id="tab_list">
         <div id="tab-course_selection" class="tab_link">Select Courses</div>
         <div id="tab-section_selection" class="tab_link">Select Sections</div>
+        <div id="tab-schedule_builder" class="tab_link">Build Schedule</div>
     </div>
     <div id="content">
         <div id="course_selection" class="tab_content active_content">
@@ -27,13 +28,47 @@
         </div>
         <div id="section_selection" class="tab_content">
             <div class="filter_sidebar">
-                <form id="section_filters"></form>
+                <form id="section_filters">
+                </form>
                 <div class="selected_list">
                     <!-- SELECTED INFORMATION TEMPLATE -->
                 </div>
             </div>
             <div id="section_list">
                 <!-- COURSE INFORMATION TEMPLATE -->
+            </div>
+        </div>
+        <div id="schedule_builder" class="tab_content">
+            <div class="schedule_view">
+                <div class="time_ticks"></div>
+                <div class="monday">
+                    <div class="header">Monday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="tuesday">
+                    <div class="header">Tuesday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="wednesday">
+                    <div class="header">Wednesday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="thursday">
+                    <div class="header">Thursday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="friday">
+                    <div class="header">Friday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="saturday">
+                    <div class="header">Saturday</div>
+                    <div class="bar"></div>
+                </div>
+                <div class="sunday">
+                    <div class="header">Sunday</div>
+                    <div class="bar"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -113,12 +148,12 @@
         </div>
     </template>
 
-    <script src="{% static 'course_list/global.js' %}"></script>
-    <script src="{% static 'course_list/utils.js' %}"></script>
-    <script src="{% static 'course_list/course_selection.js' %}"></script>
-    <script src="{% static 'course_list/collapsible.js' %}"></script>
-    <script src="{% static 'course_list/tablist.js' %}"></script>
-    <script src="{% static 'course_list/section_selection.js' %}"></script>
-    <script src="{% static 'course_list/section_filters.js' %}"></script>
-    <script src="{% static 'course_list/initialize_schedule_planner.js' %}"></script>
+    <script src="{% static 'course_list/js/global.js' %}"></script>
+    <script src="{% static 'course_list/js/utils.js' %}"></script>
+    <script src="{% static 'course_list/js/course_selection.js' %}"></script>
+    <script src="{% static 'course_list/js/collapsible.js' %}"></script>
+    <script src="{% static 'course_list/js/tablist.js' %}"></script>
+    <script src="{% static 'course_list/js/section_selection.js' %}"></script>
+    <script src="{% static 'course_list/js/section_filters.js' %}"></script>
+    <script src="{% static 'course_list/js/initialize_schedule_planner.js' %}"></script>
 </body>
