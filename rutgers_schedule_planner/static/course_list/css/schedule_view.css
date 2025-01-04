@@ -1,0 +1,27 @@
+.schedule_view {
+    width: 800px;
+    height: 500px;
+    display: flex;
+    flex-direction: row;
+}
+
+.time_ticks {
+    flex: 1;
+}
+
+.column {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: auto;
+    text-align: center;
+}
+
+.bar {
+    flex: 1;
+    width: 100%;
+    outline: 1px solid black;
+}

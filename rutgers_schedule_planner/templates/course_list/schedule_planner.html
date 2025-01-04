@@ -3,6 +3,8 @@
 <head>
     {% load static %}
     <link rel="stylesheet" href="{% static 'course_list/css/style.css' %}">
+    <link rel="stylesheet"
+          href="{% static 'course_list/css/schedule_view.css' %}">
 </head>
 
 <body>
@@ -12,7 +14,7 @@
         <div id="tab-schedule_builder" class="tab_link">Build Schedule</div>
     </div>
     <div id="content">
-        <div id="course_selection" class="tab_content active_content">
+        <div id="course_selection" class="tab_content">
             <div class="filter_sidebar">
                 <form id="course_search_form">
                     {{ course_search_form.as_p }}
@@ -38,38 +40,8 @@
                 <!-- COURSE INFORMATION TEMPLATE -->
             </div>
         </div>
-        <div id="schedule_builder" class="tab_content">
-            <div class="schedule_view">
-                <div class="time_ticks"></div>
-                <div class="monday">
-                    <div class="header">Monday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="tuesday">
-                    <div class="header">Tuesday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="wednesday">
-                    <div class="header">Wednesday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="thursday">
-                    <div class="header">Thursday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="friday">
-                    <div class="header">Friday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="saturday">
-                    <div class="header">Saturday</div>
-                    <div class="bar"></div>
-                </div>
-                <div class="sunday">
-                    <div class="header">Sunday</div>
-                    <div class="bar"></div>
-                </div>
-            </div>
+        <div id="schedule_builder" class="tab_content active_content">
+            <!-- SCHEDULE VIEW TEMPLATE -->
         </div>
     </div>
     <!-- ----------------------------------- TEMPLATES ----------------------------------- -->
@@ -145,6 +117,40 @@
         <div class="selected_information">
             <button class="user_course"></button>
             <span class="selected_code"></span>
+        </div>
+    </template>
+
+    <template id="template_schedule_view">
+        <div class="schedule_view">
+            <div class="time_ticks">a</div>
+            <div class="column monday">
+                <div class="header">Monday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column tuesday">
+                <div class="header">Tuesday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column wednesday">
+                <div class="header">Wednesday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column thursday">
+                <div class="header">Thursday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column friday">
+                <div class="header">Friday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column saturday">
+                <div class="header">Saturday</div>
+                <div class="bar"></div>
+            </div>
+            <div class="column sunday">
+                <div class="header">Sunday</div>
+                <div class="bar"></div>
+            </div>
         </div>
     </template>
 
