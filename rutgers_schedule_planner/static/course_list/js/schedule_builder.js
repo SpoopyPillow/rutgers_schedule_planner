@@ -11,11 +11,11 @@ function is_valid_sections(indices) {
         const section = course["sections"][section_index];
 
         for (const section_class of section["section_classes"]) {
-            const day = section_class["day"];
-
-            if (day == "H") {
-                console.log(section_class["start_time"], section_class["end_time"]);
+            if (section_class["start_time"] == null) {
+                continue;
             }
+
+            const day = section_class["day"];
 
             if (!(day in day_intervals)) {
                 day_intervals[day] = [];
@@ -28,8 +28,6 @@ function is_valid_sections(indices) {
             ]);
         }
     }
-
-    console.log(day_intervals);
 
     for (const [day, intervals] of Object.entries(day_intervals)) {
         intervals.sort((a, b) => a[0] - b[0]);
@@ -58,7 +56,7 @@ function campus_travel_time(campus1, campus2) {
         || campus1 == "LIVINGSTON" && campus2 == "BUSCH") {
         return 0;
     }
-    else if (campus1 == "COLLEGE AVENUE" && campus2 == "DOWNTOWN" 
+    else if (campus1 == "COLLEGE AVENUE" && campus2 == "DOWNTOWN"
         || campus1 == "DOWNTOWN" && campus2 == "COLLEGE AVENUE") {
         return 0;
     }
@@ -67,13 +65,19 @@ function campus_travel_time(campus1, campus2) {
     }
 }
 
-function load_section(course_index, section_index, color) {
+function load_section(course_index, section_index) {
     const schedule_view = document.querySelector("#schedule_builder .schedule_view");
 
     const course = selected_courses[course_index];
     const section = course["sections"][section_index];
 
     for (const section_class of section["section_classes"]) {
+        if (section_class["start_time"] == null) {
+            // TODO add to async class list
+            continue;
+        }
+
+        const campus = section_class["campus_title"];
         const day = section_class["day"];
         const start_time = section_class["start_time"];
         const end_time = section_class["end_time"];
@@ -82,13 +86,14 @@ function load_section(course_index, section_index, color) {
 
         const meeting = document.createElement("div");
         meeting.className = "meeting";
+        meeting.draggable = true;
 
         meeting.style.position = "absolute";
         meeting.style.top = start_pos + "%";
         meeting.style.width = "100%";
         meeting.style.height = (end_pos - start_pos) + "%";
 
-        meeting.style.backgroundColor = color;
+        meeting.style.backgroundColor = campus_colors[campus];
         meeting.style.opacity = 0.5;
 
 
@@ -97,10 +102,17 @@ function load_section(course_index, section_index, color) {
     }
 }
 
+// TODO check if start_time exists
+function section_product() {
+    return array_product(selected_courses.map((course, index) => {
+        return [...Array(course["sections"].length).keys()]
+    })).map(product => product.map((value, index) => [index, value]));
+}
+
 function check_valid_sections(indices) {
     console.log(is_valid_sections(indices));
 
     for (const [course_index, section_index] of indices) {
-        load_section(course_index, section_index, getRandomColor());
+        load_section(course_index, section_index);
     }
 }

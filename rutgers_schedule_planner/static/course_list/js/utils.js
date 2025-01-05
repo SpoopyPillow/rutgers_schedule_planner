@@ -32,11 +32,23 @@ function time_to_percent(time) {
     return (time_minutes - start_minutes) / (end_minutes - start_minutes) * 100;
 }
 
-function getRandomColor() {
+function get_random_color() {
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+function array_product(...arrays) {
+    return arrays[0].reduce((prevAccumulator, currentArray) => {
+        let newAccumulator = [];
+        prevAccumulator.forEach(prevAccumulatorArray => {
+            currentArray.forEach(currentValue => {
+                newAccumulator.push(prevAccumulatorArray.concat(currentValue));
+            });
+        });
+        return newAccumulator;
+    }, [[]]);
 }

@@ -31,12 +31,14 @@ document.querySelectorAll(".tab_link").forEach(element => {
 document.getElementById("test_display_courses").addEventListener("click", load_courses);
 
 waitForFinish("#course_selection .selected_list").then((element) => {
+    console.log(selected_courses);
     load_courses();
     filter_sections();
 
     load_schedule_view();
     waitForElement("#schedule_builder .schedule_view").then((element) => {
-        console.log(selected_courses);
-        check_valid_sections([[0, 10], [1, 4], [2, 5]]);
+        const product = section_product();
+        const check = product[2];
+        check_valid_sections(check);
     });
 });

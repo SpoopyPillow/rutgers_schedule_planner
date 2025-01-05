@@ -11,3 +11,11 @@ var deselected_section_filters = {};
 
 var start_time = "8:00:00";
 var end_time = "23:00:00";
+var campus_colors = {
+    "ONLINE": "red",
+    "BUSCH": "blue",
+    "LIVINGSTON": "orange",
+    "COLLEGE AVENUE": "yellow",
+    "COOK/DOUGLASS": "green",
+    "DOWNTOWN": "pink"
+}
