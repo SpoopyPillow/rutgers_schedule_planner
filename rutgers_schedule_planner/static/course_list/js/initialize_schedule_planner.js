@@ -35,10 +35,8 @@ waitForFinish("#course_selection .selected_list").then((element) => {
     load_courses();
     filter_sections();
 
-    load_schedule_view();
+    initialize_schedule_view();
     waitForElement("#schedule_builder .schedule_view").then((element) => {
-        const product = section_product();
-        const check = product[2];
-        check_valid_sections(check);
+        // DO SOMETHING
     });
 });

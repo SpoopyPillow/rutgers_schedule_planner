@@ -65,3 +65,24 @@
     overflow: hidden;
     background-color: #f1f1f1;
 }
+
+#schedule_builder {
+    display: flex;
+}
+
+#schedule_sidebar {
+    flex: 1;
+    display: flex;
+}
+
+#course_selected_list {
+    flex: 1;
+}
+
+#section_selected_list {
+    flex: 1;
+}
+
+#schedule_builder .schedule_view {
+    flex: 4;
+}

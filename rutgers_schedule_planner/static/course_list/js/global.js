@@ -9,6 +9,8 @@ var hidden_courses = [];
 var selected_sections = [];
 var deselected_section_filters = {};
 
+var schedule = [];
+
 var start_time = "8:00:00";
 var end_time = "23:00:00";
 var campus_colors = {
