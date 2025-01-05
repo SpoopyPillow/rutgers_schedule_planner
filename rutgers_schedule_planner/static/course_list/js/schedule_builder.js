@@ -52,11 +52,11 @@ function load_section_selected_list(course_index) {
         }
         section_selected_information.onmouseenter = function () {
             console.log("mouse on");
-            load_section(course_index, section_index);
+            load_section(course_index, section_index, true);
         }
         section_selected_information.onmouseleave = function () {
             console.log("mouse off");
-            load_section(course_index, schedule[course_index]);
+            load_section(course_index, schedule[course_index], false);
         }
 
         section_selected_list.appendChild(section_selected_information);
@@ -128,15 +128,23 @@ function campus_travel_time(campus1, campus2) {
     }
 }
 
-function load_section(course_index, section_index) {
+function load_section(course_index, section_index, hover = false) {
     const schedule_view = document.querySelector("#schedule_builder .schedule_view");
 
-    schedule_view.querySelectorAll(".course_" + course_index).forEach(element => {
-        while (element.firstChild) {
-            element.removeChild(element.lastChild);
-        }
-        element.remove();
-    });
+    schedule_view.querySelectorAll((hover ? ".hover" : "") + ".course_" + course_index)
+        .forEach(element => {
+            while (element.firstChild) {
+                element.removeChild(element.lastChild);
+            }
+            element.remove();
+        });
+
+    if (hover) {
+        schedule_view.querySelectorAll(".course_" + course_index)
+            .forEach(element => {
+                element.style.opacity = 0.25;
+            })
+    }
 
     if (section_index == -1) {
         return;
@@ -167,7 +175,10 @@ function load_section(course_index, section_index) {
         meeting.style.height = (end_pos - start_pos) + "%";
 
         meeting.style.backgroundColor = campus_colors[campus];
-        meeting.style.opacity = 0.5;
+
+        if (hover) {
+            meeting.classList.add("hover");
+        }
 
 
         const bar = schedule_view.querySelector("." + day + " .bar");
