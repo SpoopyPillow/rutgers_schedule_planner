@@ -19,13 +19,14 @@ function create_course_selected_information(course_index) {
     course_selected_information.textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
 
     course_selected_information.onclick = function () {
-        unfocus_sections();
+        unfocus_schedule_sections();
         if (course_selected_information.classList.contains("focused_course")) {
             course_selected_information.classList.remove("focused_course");
             unload_section_selected_list();
             return;
         }
 
+        focus_schedule_section(course_index);
         const focused_course = document.querySelector("#course_selected_list .focused_course")
         if (focused_course != null) {
             focused_course.classList.remove("focused_course");
@@ -33,7 +34,7 @@ function create_course_selected_information(course_index) {
         course_selected_information.classList.add("focused_course");
 
         load_section_selected_list(course_index);
-        load_section(course_index, schedule[course_index]);
+        load_schedule_section(course_index, schedule[course_index]);
     }
 
     return course_selected_information;
@@ -52,7 +53,7 @@ function load_section_selected_list(course_index) {
         const section = course["sections"][i];
 
         const section_selected_information = document.createElement("div");
-        section_selected_information.className = section_selected_information;
+        section_selected_information.className = "section_selected_information";
 
         section_selected_information.textContent = section["number"];
 
@@ -63,34 +64,34 @@ function load_section_selected_list(course_index) {
             }
 
             schedule[course_index] = -1;
-            load_section(course_index, -1);
+            load_schedule_section(course_index, -1);
             if (section_selected_information.classList.contains("focused_section")) {
-                section_selected_information.classList.remove("focused_section")
+                section_selected_information.classList.remove("focused_section");
                 section_selected_information.dispatchEvent(new Event("mouseenter"));
                 return;
             }
 
-            const focused_section = document.querySelector("#course_selected_list .focused_section")
+            const focused_section = document.querySelector("#section_selected_list .focused_section")
             if (focused_section != null) {
                 focused_section.classList.remove("focused_section");
             }
             section_selected_information.classList.add("focused_section");
 
             schedule[course_index] = section_index;
-            load_section(course_index, section_index);
+            load_schedule_section(course_index, section_index);
         }
 
         section_selected_information.onmouseenter = function () {
             if (section_selected_information.classList.contains("focused_section")) {
-                load_section(course_index, section_index, false);
+                load_schedule_section(course_index, section_index, false);
             }
             else {
-                load_section(course_index, section_index, true);
+                load_schedule_section(course_index, section_index, true);
             }
         }
 
         section_selected_information.onmouseleave = function () {
-            load_section(course_index, schedule[course_index], false);
+            load_schedule_section(course_index, schedule[course_index], false);
         }
 
         section_selected_list.appendChild(section_selected_information);
@@ -170,16 +171,30 @@ function campus_travel_time(campus1, campus2) {
     }
 }
 
-function load_section(course_index, section_index, hover = false) {
+function focus_schedule_section(course_index) {
+    const schedule_view = document.querySelector("#schedule_builder .schedule_view");
+    for (const meeting of schedule_view.querySelectorAll(".meeting")) {
+        if (!(meeting.classList.contains("course_" + course_index))) {
+            meeting.style.backgroundColor = shade_color(meeting.style.backgroundColor, -40);
+        }
+    }
+}
+
+function unfocus_schedule_sections() {
+    for (var course_index = 0; course_index < selected_courses.length; course_index++) {
+        load_schedule_section(course_index, schedule[course_index]);
+    }
+}
+
+function load_schedule_section(course_index, section_index, hover = false) {
     const schedule_view = document.querySelector("#schedule_builder .schedule_view");
 
-    schedule_view.querySelectorAll((hover ? ".hover" : "") + ".course_" + course_index)
-        .forEach(element => {
-            while (element.firstChild) {
-                element.removeChild(element.lastChild);
-            }
-            element.remove();
-        });
+    for (const element of schedule_view.querySelectorAll((hover ? ".hover" : "") + ".course_" + course_index)) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
+        element.remove();
+    }
 
     if (section_index == -1) {
         return;
@@ -187,7 +202,7 @@ function load_section(course_index, section_index, hover = false) {
 
     if (hover) {
         for (const element of schedule_view.querySelectorAll(".course_" + course_index)) {
-            element.style.opacity = 0.1;
+            element.style.opacity = 0.25;
         }
     }
 
@@ -209,27 +224,21 @@ function load_section(course_index, section_index, hover = false) {
 
         const meeting = document.createElement("div");
         meeting.className = "meeting course_" + course_index;
-        if (hover) {
-            meeting.classList.add("hover");
-            meeting.style.opacity = 0.75;
-        }
 
         meeting.style.position = "absolute";
         meeting.style.top = start_pos + "%";
         meeting.style.width = "100%";
         meeting.style.height = (end_pos - start_pos) + "%";
 
-        meeting.style.backgroundColor = campus_colors[campus];
-        meeting.style.outline = "2px solid red";
+        if (hover) {
+            meeting.classList.add("hover");
+            meeting.style.outline = "5px solid " + campus_colors[campus];
+        }
+        else {
+            meeting.style.backgroundColor = campus_colors[campus];
+        }
 
         const bar = schedule_view.querySelector("." + day + " .bar");
         bar.appendChild(meeting);
-    }
-}
-
-function unfocus_sections() {
-    const schedule_view = document.querySelector("#schedule_builder .schedule_view");
-    for (const meeting of schedule_view.querySelectorAll(".meeting")) {
-        meeting.style.outline = "none";
     }
 }

@@ -14,10 +14,10 @@ var schedule = [];
 var start_time = "8:00:00";
 var end_time = "23:00:00";
 var campus_colors = {
-    "ONLINE": "red",
-    "BUSCH": "blue",
-    "LIVINGSTON": "orange",
-    "COLLEGE AVENUE": "yellow",
-    "COOK/DOUGLASS": "green",
-    "DOWNTOWN": "pink"
+    "ONLINE": "#FF4040",
+    "BUSCH": "#00CCFF",
+    "LIVINGSTON": "#FF7700",
+    "COLLEGE AVENUE": "#FFCC00",
+    "COOK/DOUGLASS": "#DDFFDD",
+    "DOWNTOWN": "FFD7EF"
 }
