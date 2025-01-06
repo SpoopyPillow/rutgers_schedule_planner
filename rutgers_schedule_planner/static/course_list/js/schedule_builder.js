@@ -6,6 +6,9 @@ function initialize_schedule_view() {
 
     const course_selected_list = document.getElementById("course_selected_list");
     for (var i = 0; i < selected_courses.length; i++) {
+        if (hidden_courses[i]) {
+            continue;
+        }
         course_selected_list.appendChild(create_course_selected_information(i));
     }
 }
@@ -50,6 +53,10 @@ function load_section_selected_list(course_index) {
     const course = selected_courses[course_index];
     for (var i = 0; i < course["sections"].length; i++) {
         const section_index = i;
+        if (selected_sections[course_index][section_index] == 0) {
+            continue;
+        }
+
         const section = course["sections"][i];
 
         const section_selected_information = document.createElement("div");
@@ -58,9 +65,10 @@ function load_section_selected_list(course_index) {
         section_selected_information.textContent = section["number"];
 
         section_selected_information.onclick = function () {
-            if (!is_valid_sections(schedule.with(course_index, section_index))) {
-                console.log("invalid");
-                return;
+            const interfering = is_valid_sections(schedule.with(course_index, section_index), course_index);
+            for (const i of interfering) {
+                schedule[i] = -1;
+                load_schedule_section(i, -1);
             }
 
             schedule[course_index] = -1;
@@ -106,7 +114,7 @@ function unload_section_selected_list() {
     }
 }
 
-function is_valid_sections(indices) {
+function is_valid_sections(indices, inserted_course = null) {
     const day_intervals = {};
 
     for (const [course_index, section_index] of indices.entries()) {
@@ -130,20 +138,25 @@ function is_valid_sections(indices) {
             day_intervals[day].push([
                 time_to_minutes(section_class["start_time"]),
                 time_to_minutes(section_class["end_time"]),
-                section_class["campus_title"]
+                section_class["campus_title"],
+                course_index
             ]);
         }
     }
 
+    const interfering = [];
     for (const [day, intervals] of Object.entries(day_intervals)) {
         intervals.sort((a, b) => a[0] - b[0]);
 
-        let prev_end = intervals[0][1];
-        let prev_campus = intervals[0][2];
-        for (const [start, end, campus] of intervals.slice(1)) {
-            if (start >= prev_end + campus_travel_time(prev_campus, campus)) {
-                prev_end = end;
-                prev_campus = campus;
+        for (var i = 1; i < intervals.length; i++) {
+            const cur = intervals[i];
+            const prev = intervals[i - 1];
+            if (cur[0] >= prev[1] + campus_travel_time(prev[2], cur[2])) {
+                continue;
+            }
+
+            if (inserted_course != null) {
+                interfering.push(cur[3] == inserted_course ? prev[3] : cur[3]);
             }
             else {
                 return false;
@@ -151,6 +164,9 @@ function is_valid_sections(indices) {
         }
     }
 
+    if (inserted_course != null) {
+        return interfering;
+    }
     return true;
 }
 
