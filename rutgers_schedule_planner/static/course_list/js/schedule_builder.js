@@ -133,6 +133,9 @@ function load_section_selected_list(course_index) {
             sync_focused_section();
         }
         if (!is_valid_sections(schedule.with(course_index, section_index))) {
+            section_selected_information.addEventListener("click", function () {
+                load_section_selected_list(course_index);
+            })
             schedule_section_interfering.appendChild(section_selected_information);
         }
         else {
@@ -307,6 +310,7 @@ function load_schedule_section(course_index, section_index, hover = false) {
         }
         else {
             meeting.style.backgroundColor = campus_colors[campus];
+            meeting.textContent = course["title"];
         }
 
         const bar = schedule_view.querySelector("." + day + " .bar");
