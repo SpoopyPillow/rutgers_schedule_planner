@@ -44,11 +44,11 @@ function create_course_selected_information(course_index) {
 }
 
 function load_section_selected_list(course_index) {
-    const section_selected_list = document.getElementById("section_selected_list");
+    unload_section_selected_list();
 
-    while (section_selected_list.firstChild) {
-        section_selected_list.removeChild(section_selected_list.lastChild);
-    }
+    const schedule_section_selected = document.querySelector("#schedule_section_selected");
+    const schedule_section_list = document.querySelector("#schedule_section_list");
+    const schedule_section_interfering = document.querySelector("#schedule_section_interfering");
 
     const course = selected_courses[course_index];
     for (var i = 0; i < course["sections"].length; i++) {
@@ -73,17 +73,20 @@ function load_section_selected_list(course_index) {
 
             schedule[course_index] = -1;
             load_schedule_section(course_index, -1);
+
             if (section_selected_information.classList.contains("focused_section")) {
                 section_selected_information.classList.remove("focused_section");
+                sync_focused_section();
                 section_selected_information.dispatchEvent(new Event("mouseenter"));
                 return;
             }
 
-            const focused_section = document.querySelector("#section_selected_list .focused_section")
-            if (focused_section != null) {
-                focused_section.classList.remove("focused_section");
+            const prev_focused = schedule_section_list.querySelector(".focused_section");
+            if (prev_focused != null) {
+                prev_focused.classList.remove("focused_section");
             }
             section_selected_information.classList.add("focused_section");
+            sync_focused_section();
 
             schedule[course_index] = section_index;
             load_schedule_section(course_index, section_index);
@@ -117,16 +120,46 @@ function load_section_selected_list(course_index) {
             load_schedule_section(course_index, schedule[course_index], false);
         }
 
-        section_selected_list.appendChild(section_selected_information);
+        if (section_index == schedule[course_index]) {
+            section_selected_information.classList.add("focused_section");
+            schedule_section_list.appendChild(section_selected_information);
+            sync_focused_section();
+        }
+        if (!is_valid_sections(schedule.with(course_index, section_index))) {
+            schedule_section_interfering.appendChild(section_selected_information);
+        }
+        else {
+            schedule_section_list.appendChild(section_selected_information);
+        }
     }
 }
 
 function unload_section_selected_list() {
-    const section_selected_list = document.getElementById("section_selected_list");
-
-    while (section_selected_list.firstChild) {
-        section_selected_list.removeChild(section_selected_list.lastChild);
+    for (const element of document.querySelectorAll("#schedule_builder .section_selected_information")) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
+        element.remove();
     }
+}
+
+function sync_focused_section() {
+    const schedule_section_selected = document.getElementById("schedule_section_selected");
+    const schedule_section_list = document.getElementById("schedule_section_list");
+
+    while (schedule_section_selected.firstChild) {
+        schedule_section_selected.removeChild(schedule_section_selected.lastChild);
+    }
+
+    const focused = schedule_section_list.querySelector(".focused_section");
+    if (focused == null) {
+        return;
+    }
+    const cloned = focused.cloneNode(true);
+    cloned.onclick = function () {
+        focused.click()
+    }
+    schedule_section_selected.appendChild(cloned);
 }
 
 function is_valid_sections(indices, inserted_course = null) {
