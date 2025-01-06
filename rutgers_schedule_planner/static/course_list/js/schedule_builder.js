@@ -1,8 +1,6 @@
-function initialize_schedule_view() {
+function initialize_schedule_builder() {
     schedule = new Array(selected_courses.length).fill(-1);
-
-    const schedule_builder = document.getElementById("schedule_builder");
-    schedule_builder.appendChild(template_schedule_view.content.cloneNode(true));
+    load_schedule_view();
 
     const course_selected_list = document.getElementById("course_selected_list");
     for (var i = 0; i < selected_courses.length; i++) {
@@ -14,6 +12,36 @@ function initialize_schedule_view() {
 
     section_selected_list_placeholder();
     load_schedule();
+}
+
+function load_schedule_view() {
+    const schedule_builder = document.getElementById("schedule_builder");
+    const schedule_view = template_schedule_view.content.cloneNode(true).querySelector(".schedule_view");
+    schedule_builder.appendChild(schedule_view);
+
+    const time_ticks = schedule_view.querySelector(".time_ticks");
+    const bar = schedule_view.querySelector(".bar");
+
+    const tick_height = 10;
+
+    const height = bar.offsetHeight;
+    const top_offset = bar.offsetTop - tick_height/2;
+
+    const start_hour = Math.floor(time_to_minutes(start_time) / 60);
+    const end_hour = Math.floor(time_to_minutes(end_time) / 60);
+    for (var i = start_hour; i <= end_hour; i++) {
+        const hour = i;
+
+        const tick = document.createElement("div");
+        tick.className = "tick";
+        tick.textContent = (hour % 12 || 12) + (hour >= 12 ? " pm" : " am");
+
+        tick.style.position = "absolute";
+        tick.style.top = top_offset + (hour - start_hour) / (end_hour - start_hour) * height + "px";
+        tick.style.height = tick_height + "px";
+
+        time_ticks.appendChild(tick);
+    }
 }
 
 function create_course_selected_information(course_index) {

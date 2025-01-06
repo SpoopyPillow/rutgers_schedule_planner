@@ -6,6 +6,15 @@
 
 .time_ticks {
     flex: 1;
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+.tick {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .column {

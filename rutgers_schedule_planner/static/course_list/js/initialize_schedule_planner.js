@@ -35,7 +35,7 @@ waitForFinish("#course_selection .selected_list").then((element) => {
     load_courses();
     filter_sections();
 
-    initialize_schedule_view();
+    initialize_schedule_builder();
     waitForElement("#schedule_builder .schedule_view").then((element) => {
         // DO SOMETHING
     });
