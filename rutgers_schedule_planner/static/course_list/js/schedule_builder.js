@@ -11,6 +11,8 @@ function initialize_schedule_view() {
         }
         course_selected_list.appendChild(create_course_selected_information(i));
     }
+
+    load_schedule();
 }
 
 function create_course_selected_information(course_index) {
@@ -22,7 +24,7 @@ function create_course_selected_information(course_index) {
     course_selected_information.textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
 
     course_selected_information.onclick = function () {
-        unfocus_schedule_sections();
+        load_schedule();
         if (course_selected_information.classList.contains("focused_course")) {
             course_selected_information.classList.remove("focused_course");
             unload_section_selected_list();
@@ -46,14 +48,19 @@ function create_course_selected_information(course_index) {
 function load_section_selected_list(course_index) {
     unload_section_selected_list();
 
-    const schedule_section_selected = document.querySelector("#schedule_section_selected");
     const schedule_section_list = document.querySelector("#schedule_section_list");
     const schedule_section_interfering = document.querySelector("#schedule_section_interfering");
 
+    const course_information = section_list.querySelectorAll(".course_information")[course_index];
     const course = selected_courses[course_index];
     for (var i = 0; i < course["sections"].length; i++) {
         const section_index = i;
-        if (selected_sections[course_index][section_index] == 0) {
+
+        const section_information = course_information.querySelectorAll(".section_information")[section_index];
+        if (section_information.style.display == "none") {
+            continue;
+        }
+        if (section_information.querySelector(".select_section").checked == false) {
             continue;
         }
 
@@ -244,7 +251,7 @@ function focus_schedule_section(course_index) {
     }
 }
 
-function unfocus_schedule_sections() {
+function load_schedule() {
     for (var course_index = 0; course_index < selected_courses.length; course_index++) {
         load_schedule_section(course_index, schedule[course_index]);
     }
