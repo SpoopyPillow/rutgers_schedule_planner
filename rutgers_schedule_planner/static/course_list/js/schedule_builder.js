@@ -90,6 +90,15 @@ function load_section_selected_list(course_index) {
         }
 
         section_selected_information.onmouseenter = function () {
+            const schedule_view = document.querySelector("#schedule_builder .schedule_view");
+
+            const interfering = is_valid_sections(schedule.with(course_index, section_index), course_index);
+            for (const i of interfering) {
+                schedule_view.querySelectorAll(".course_" + i).forEach(element => {
+                    element.classList.add("interfering");
+                });
+            }
+
             if (section_selected_information.classList.contains("focused_section")) {
                 load_schedule_section(course_index, section_index, false);
             }
@@ -99,6 +108,12 @@ function load_section_selected_list(course_index) {
         }
 
         section_selected_information.onmouseleave = function () {
+            const schedule_view = document.querySelector("#schedule_builder .schedule_view");
+
+            schedule_view.querySelectorAll(".interfering").forEach(element => {
+                element.classList.remove("interfering");
+            });
+
             load_schedule_section(course_index, schedule[course_index], false);
         }
 
