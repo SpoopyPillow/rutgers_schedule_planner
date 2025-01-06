@@ -75,7 +75,7 @@
     display: flex;
 }
 
-#course_selected_list {
+#course_selected_list_wrapper {
     flex: 1;
 }
 

@@ -12,6 +12,7 @@ function initialize_schedule_view() {
         course_selected_list.appendChild(create_course_selected_information(i));
     }
 
+    section_selected_list_placeholder();
     load_schedule();
 }
 
@@ -27,6 +28,7 @@ function create_course_selected_information(course_index) {
         load_schedule();
         if (course_selected_information.classList.contains("focused_course")) {
             course_selected_information.classList.remove("focused_course");
+            section_selected_list_placeholder();
             unload_section_selected_list();
             return;
         }
@@ -39,6 +41,7 @@ function create_course_selected_information(course_index) {
         course_selected_information.classList.add("focused_course");
 
         load_section_selected_list(course_index);
+        section_selected_list_placeholder();
         load_schedule_section(course_index, schedule[course_index]);
     }
 
@@ -84,6 +87,7 @@ function load_section_selected_list(course_index) {
             if (section_selected_information.classList.contains("focused_section")) {
                 section_selected_information.classList.remove("focused_section");
                 sync_focused_section();
+                schedule_section_selected_placeholder();
                 section_selected_information.dispatchEvent(new Event("mouseenter"));
                 return;
             }
@@ -142,6 +146,8 @@ function load_section_selected_list(course_index) {
             schedule_section_list.appendChild(section_selected_information);
         }
     }
+
+    schedule_section_selected_placeholder();
 }
 
 function unload_section_selected_list() {
@@ -150,6 +156,30 @@ function unload_section_selected_list() {
             element.removeChild(element.lastChild);
         }
         element.remove();
+    }
+}
+
+function section_selected_list_placeholder() {
+    const section_selected_list = document.getElementById("section_selected_list");
+
+    if (document.querySelector(".focused_course") != null) {
+        section_selected_list.style.display = "";
+    }
+    else {
+        section_selected_list.style.display = "none";
+    }
+}
+
+function schedule_section_selected_placeholder() {
+    const schedule_builder = document.getElementById("schedule_builder");
+
+    const schedule_section_selected = schedule_builder.querySelector("#schedule_section_selected");
+    if (!schedule_section_selected.firstChild) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "placeholder";
+        placeholder.textContent = "--Select Section--";
+
+        schedule_section_selected.appendChild(placeholder);
     }
 }
 

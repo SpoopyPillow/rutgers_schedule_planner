@@ -42,11 +42,23 @@
         </div>
         <div id="schedule_builder" class="tab_content active_content">
             <div id="schedule_sidebar">
-                <div id="course_selected_list"></div>
+                <div id="course_selected_list_wrapper">
+                    <p>Selected Courses</p>
+                    <div id="course_selected_list"></div>
+                </div>
                 <div id="section_selected_list">
-                    <div id="schedule_section_selected"></div>
-                    <div id="schedule_section_list"></div>
-                    <div id="schedule_section_interfering"></div>
+                    <div id="schedule_section_selected_wrapper">
+                        <p>Selected Section</p>
+                        <div id="schedule_section_selected"></div>
+                    </div>
+                    <div id="schedule_section_list_wrapper">
+                        <p>Possible Sections</p>
+                        <div id="schedule_section_list"></div>
+                    </div>
+                    <div id="schedule_section_interfering_wrapper">
+                        <p>Overlapping Sections</p>
+                        <div id="schedule_section_interfering"></div>
+                    </div>
                 </div>
             </div>
             <!-- SCHEDULE VIEW TEMPLATE -->
