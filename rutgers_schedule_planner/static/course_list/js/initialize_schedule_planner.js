@@ -36,7 +36,5 @@ waitForFinish("#course_selection .selected_list").then((element) => {
     filter_sections();
 
     initialize_schedule_builder();
-    waitForElement("#schedule_builder .schedule_view").then((element) => {
-        // DO SOMETHING
-    });
+    document.getElementById("tab-schedule_builder").addEventListener("click", update_schedule_builder);
 });

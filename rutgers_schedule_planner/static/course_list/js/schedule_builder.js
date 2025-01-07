@@ -2,12 +2,33 @@ function initialize_schedule_builder() {
     schedule = new Array(selected_courses.length).fill(-1);
     load_schedule_view();
 
+    update_schedule_builder();
+}
+
+function update_schedule_builder() {
     const course_selected_list = document.getElementById("course_selected_list");
+    while (course_selected_list.firstChild) {
+        course_selected_list.removeChild(course_selected_list.lastChild);
+    }
+
     for (var i = 0; i < selected_courses.length; i++) {
         if (hidden_courses[i]) {
+            schedule[i] = -1;
             continue;
         }
         course_selected_list.appendChild(create_course_selected_information(i));
+
+        if (schedule[i] == -1) {
+            continue;
+        }
+        const section_information = document
+            .querySelectorAll("#section_list .course_information")[i]
+            .querySelectorAll(".section_information")[schedule[i]];
+
+        if (section_information.style.display == "none" 
+            || section_information.querySelector(".select_section").checked == false) {
+            schedule[i] = -1;
+        }
     }
 
     section_selected_list_placeholder();
@@ -89,10 +110,8 @@ function load_section_selected_list(course_index) {
         const section_index = i;
 
         const section_information = course_information.querySelectorAll(".section_information")[section_index];
-        if (section_information.style.display == "none") {
-            continue;
-        }
-        if (section_information.querySelector(".select_section").checked == false) {
+        if (section_information.style.display == "none"
+            || section_information.querySelector(".select_section").checked == false) {
             continue;
         }
 
@@ -314,6 +333,12 @@ function focus_schedule_section(course_index) {
 }
 
 function load_schedule() {
+    for (const element of document.querySelectorAll(".meeting")) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
+        element.remove();
+    }
     for (var course_index = 0; course_index < selected_courses.length; course_index++) {
         load_schedule_section(course_index, schedule[course_index]);
     }

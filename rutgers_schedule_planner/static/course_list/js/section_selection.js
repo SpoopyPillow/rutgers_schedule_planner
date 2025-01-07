@@ -99,6 +99,7 @@ function select_course(course, target) {
             selected_courses.push(course);
             selected_sections.push(new Array(course["sections"].length).fill(1));
             hidden_courses.push(0);
+            schedule.push(-1);
 
             append_selected(course, target);
             load_section_filters(data["section_filter_form"]);
@@ -130,6 +131,7 @@ function remove_course(course, target) {
             selected_courses.splice(index, 1);
             selected_sections.splice(index, 1);
             hidden_courses.splice(index, 1);
+            schedule.splice(index, 1);
 
             pop_selected(index);
             load_section_filters(data["section_filter_form"]);
