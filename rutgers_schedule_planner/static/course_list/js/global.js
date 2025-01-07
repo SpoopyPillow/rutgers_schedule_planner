@@ -3,6 +3,7 @@ const template_section_information = document.getElementById("template_section_i
 const template_section_class_information = document.getElementById("template_section_class_information");
 const template_selected_information = document.getElementById("template_selected_information");
 const template_schedule_view = document.getElementById("template_schedule_view");
+const template_popup_information = document.getElementById("template_popup_information");
 
 var selected_courses = [];
 var hidden_courses = [];

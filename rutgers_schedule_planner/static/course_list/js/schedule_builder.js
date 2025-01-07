@@ -16,8 +16,9 @@ function initialize_schedule_builder() {
 
 function load_schedule_view() {
     const schedule_builder = document.getElementById("schedule_builder");
-    const schedule_view = template_schedule_view.content.cloneNode(true).querySelector(".schedule_view");
-    schedule_builder.appendChild(schedule_view);
+    const template = template_schedule_view.content.cloneNode(true);
+    const schedule_view = template.querySelector(".schedule_view");
+    schedule_builder.appendChild(template);
 
     const time_ticks = schedule_view.querySelector(".time_ticks");
     const bar = schedule_view.querySelector(".bar");
@@ -25,7 +26,7 @@ function load_schedule_view() {
     const tick_height = 10;
 
     const height = bar.offsetHeight;
-    const top_offset = bar.offsetTop - tick_height/2;
+    const top_offset = bar.offsetTop - tick_height;
 
     const start_hour = Math.floor(time_to_minutes(start_time) / 60);
     const end_hour = Math.floor(time_to_minutes(end_time) / 60);
@@ -369,9 +370,53 @@ function load_schedule_section(course_index, section_index, hover = false) {
         else {
             meeting.style.backgroundColor = campus_colors[campus];
             meeting.textContent = course["title"];
+
+            meeting.onmouseenter = function () {
+                meeting_popup(meeting, course, section, section_class);
+            }
+            meeting.onmouseleave = function () {
+                remove_meeting_popups();
+            }
         }
 
         const bar = schedule_view.querySelector("." + day + " .bar");
         bar.appendChild(meeting);
+    }
+}
+
+function meeting_popup(meeting, course, section, section_class) {
+    meeting.classList.add("popup_target");
+
+    const scheudle_view = document.querySelector("#schedule_builder .schedule_view");
+
+    const template = template_popup_information.content.cloneNode(true);
+    const popup_information = template.querySelector(".popup_information");
+
+    popup_information.querySelector(".title").textContent = course["title"];
+    popup_information.querySelector(".course").textContent = course["school"]["code"] + ":" + course["subject"]["code"] + ":" + course["code"];
+    popup_information.querySelector(".section").textContent = section["number"];
+    popup_information.querySelector(".index").textContent = section["index"];
+    popup_information.querySelector(".time").textContent = section_class["start_time"] + "-" + section_class["end_time"];
+    popup_information.querySelector(".status").textContent = section["open_status"];
+    popup_information.querySelector(".location").textContent = section_class["building"] + " " + section_class["room"] + " " + section_class["campus_title"];
+
+    scheudle_view.appendChild(template);
+
+    const meeting_rect = meeting.getBoundingClientRect();
+
+    popup_information.style.top = (meeting_rect.top - popup_information.clientHeight) + "px";
+    popup_information.style.left = meeting_rect.left + "px";
+}
+
+function remove_meeting_popups() {
+    const meeting = document.querySelector("#schedule_builder .popup_target");
+    if (meeting != null) {
+        meeting.classList.remove("popup_target");
+    }
+
+    for (const element of document.querySelectorAll("#schedule_builder .popup_information")) {
+        while (element.firstChild) {
+            element.removeChild(element.lastChild);
+        }
     }
 }
